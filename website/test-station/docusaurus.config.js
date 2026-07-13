@@ -7,8 +7,8 @@ const config = {
   tagline: 'Open-source hardware and AI-assisted measurement platform for analog chip testing',
   favicon: 'img/favicon.ico',
 
-  url: 'https://kaiyuank.github.io',
-  baseUrl: '/Automated-Analog-IC-Test-Station/',
+  url: 'https://aimlab-wustl.github.io',
+  baseUrl: '/RCNteststation/',
 
   organizationName: 'kaiyuank',
   projectName: 'Automated-Analog-IC-Test-Station',
