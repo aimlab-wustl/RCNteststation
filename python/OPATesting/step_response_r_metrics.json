@@ -1,0 +1,9 @@
+{
+  "error": "step size too small (<10mV) -- check wiring and PD9 state",
+  "v_initial": 0.8350331883726252,
+  "v_final": 0.8287388418402379,
+  "step_size_V": -0.006294346532387252,
+  "rate_hz": 3200000.0,
+  "pretrig_n": 1600,
+  "n_samples": 8000
+}

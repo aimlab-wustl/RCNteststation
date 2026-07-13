@@ -1,0 +1,38 @@
+---
+id: subsystems-overview
+title: System Overview
+sidebar_position: 1
+---
+
+# System Overview
+
+## Overview
+
+The test station is built around two parallel control paths -- the NI USB-6212 DAQ
+and the STM32H743 MCU -- that share the same DAC bias generation hardware, selectable
+by shunt jumper. All signals to and from the DUT route through a ZIF40 connector chain
+on the motherboard into a daughterboard then to a package-specific DUT adapter.
+
+## Block Diagram
+
+<img src="/Automated-Analog-IC-Test-Station/img/blockdiagram.png" alt="AIMLAB system block diagram" style={{width: '100%'}} />
+
+The two control paths (NI USB-6212 and STM32H743) connect to the host PC over USB.
+Both can drive the DAC80508 daisy chain for bias voltage generation, selected by a
+shunt jumper. The STM32 exclusively controls the ADS131A04 ADC via SPI2 DMA for
+voltage measurement, and the OPA3S328 TIA gain selection via GPIO for current
+measurement. The TIA output feeds back into the ADS131 so current readings are
+digitized directly by the ADC. DIO lines from both controllers pass through
+SN74LVC8T245 level translators before reaching the ZIF40 DUT interface -- output
+voltage (1.8V, 3.3V, or 5V) and direction are both set by shunt jumpers on the board.
+
+## Subsystem Summary
+
+| Subsystem | Key Component | Channels | Interface | Performance |
+|-----------|--------------|----------|-----------|-------------|
+| [Power](./power) | LM1086, TPS7A2018, ADR4525CRZ | 4 rails + 2.5V ref | -- | -- |
+| [NI DAQ](./ni-daq) | NI USB-6212 | 16 AI, 2 AO, 32 DIO, 16 PFI | USB | AI: 400 kS/s |
+| [STM32](./stm32) | STM32H743VIT6 | 18 DIO, 4 ADC | USB CDC | Burst ADC: 3.2 MSPS |
+| [DAC](./dac) | DAC80508 x5 | 40 ch, 16-bit, 0-5V | SPI bit-bang | +/-1 LSB INL |
+| [ADC](./adc) | ADS131A04 x2 | 8 ch diff, 24-bit, 0-4V | SPI2 DMA | 62.5 kSPS, live stream |
+| [TIA](./tia) | OPA3S328 (1 chip, 2 circuits) | 2 ch | GPIO | +/-1 uA to +/-1.2 mA |

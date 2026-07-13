@@ -1,0 +1,16 @@
+{
+  "rise_time_us": 13.437500000000002,
+  "rise_time_is_upper_bound": 0.0,
+  "slew_rate_V_us": 0.5323909361409934,
+  "overshoot_pct": 80.17577602815452,
+  "settling_us": NaN,
+  "bandwidth_est_Hz": 26046.511627906973,
+  "v_initial": 0.8695232490272373,
+  "v_final": 0.8306777523460744,
+  "step_size_V": -0.03884549668116288,
+  "settle_pct_used": 2.0,
+  "WARNING": "bandwidth_est_Hz underestimated for large-signal steps -- use small-signal divider (1k/50) for true BW",
+  "rate_hz": 3200000.0,
+  "pretrig_n": 1600,
+  "n_samples": 8000
+}

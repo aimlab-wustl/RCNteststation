@@ -1,0 +1,35 @@
+# STM32CubeIDE / C build artifacts
+firmware/**/.cproject
+firmware/**/.project
+firmware/**/.settings/
+firmware/**/Debug/
+firmware/**/Release/
+firmware/**/*.d
+firmware/**/*.o
+firmware/**/*.elf
+firmware/**/*.bin
+firmware/**/*.map
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.env
+*.npz
+*.mat
+
+# Docusaurus / Node
+website/test-station/node_modules/
+website/test-station/.docusaurus/
+website/test-station/build/
+
+# Altium
+pcb/**/*.SchDocPreview
+pcb/**/*.PcbDocPreview
+pcb/**/__Previews/
+pcb/**/History/
+pcb/**/*.Logs/
+
+# OS
+.DS_Store
+Thumbs.db

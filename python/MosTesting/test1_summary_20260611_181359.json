@@ -1,0 +1,12 @@
+{
+  "timestamp": "20260611_181359",
+  "device": "SI2302CDS",
+  "R_drain_ohm": 10000.0,
+  "R_shunt_ohm": 100.0,
+  "V_drain_V": 5.0,
+  "Vth_V": null,
+  "Vth_pass": null,
+  "peak_gm_mS": 1.096,
+  "gm_at_Vgs_V": 0.6827,
+  "max_Id_uA": 94.97
+}

@@ -1,0 +1,9 @@
+{
+  "timestamp": "20260611_180704",
+  "device": "SI2302CDS",
+  "R_shunt_ohm": 10000.0,
+  "Vf_at_50uA_mV": 499.8,
+  "Vf_pass": true,
+  "max_Is_uA": 108.45,
+  "ideality_n": 8.152
+}

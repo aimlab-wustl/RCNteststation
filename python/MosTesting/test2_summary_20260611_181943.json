@@ -1,0 +1,51 @@
+{
+  "timestamp": "20260611_181943",
+  "device": "SI2302CDS",
+  "R_drain_ohm": 10000.0,
+  "R_shunt_ohm": 100.0,
+  "Vth_V": 0.665141909089908,
+  "curves": [
+    {
+      "Vgs_cmd_V": 0.47,
+      "Id_sat_uA": -4.01,
+      "RDS_on_ohm": null,
+      "sat_Vds_mV": null,
+      "above_Vth": false
+    },
+    {
+      "Vgs_cmd_V": 0.67,
+      "Id_sat_uA": 71.58,
+      "RDS_on_ohm": 609.916,
+      "sat_Vds_mV": 1903.5,
+      "above_Vth": true
+    },
+    {
+      "Vgs_cmd_V": 0.86,
+      "Id_sat_uA": 171.45,
+      "RDS_on_ohm": null,
+      "sat_Vds_mV": null,
+      "above_Vth": true
+    },
+    {
+      "Vgs_cmd_V": 1.2,
+      "Id_sat_uA": 170.98,
+      "RDS_on_ohm": null,
+      "sat_Vds_mV": null,
+      "above_Vth": true
+    },
+    {
+      "Vgs_cmd_V": 1.66,
+      "Id_sat_uA": 171.43,
+      "RDS_on_ohm": null,
+      "sat_Vds_mV": null,
+      "above_Vth": true
+    },
+    {
+      "Vgs_cmd_V": 2.19,
+      "Id_sat_uA": 171.39,
+      "RDS_on_ohm": null,
+      "sat_Vds_mV": null,
+      "above_Vth": true
+    }
+  ]
+}

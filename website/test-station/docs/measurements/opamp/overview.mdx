@@ -1,0 +1,262 @@
+---
+id: opamp-overview
+title: Op-Amp Measurements
+sidebar_position: 1
+---
+
+# Op-Amp Measurements
+
+## Overview
+
+The test station supports automated op-amp DC characterization through a pipeline of
+independent test scripts, each targeting a specific parameter set. Tests share the same
+physical fixture where possible and are designed to be reused across any op-amp DUT by
+changing the tag and channel assignments at instantiation. The pipeline was validated on
+the **OPA4388IDR** (TI, precision zero-drift RRIO, used as the AI input buffer on
+the motherboard) in a gain-11 non-inverting configuration.
+
+The pipeline covers: DC gain, Vos, INL, output swing, CMR, DC PSRR, input bias current,
+and step response.
+
+## Setup
+
+The gain-11 fixture is shared by DC, PSRR, Ib, and step response tests.
+CMR requires a rewire to unity gain (remove Rf and Rg, short A- to Aout directly).
+
+```
+V+   --> 5.0V supply (100nF + 10uF decoupling at pin)
+V-   --> AGND
+
+DAC80508 (NI path) ----------------------> A+
+
+ADR4525CRZ 2.5V --[Rg 10k]--> A- <--[Rf 100k]--> Aout
+ADR4525CRZ 2.5V ------------> ADS131 AINN
+
+Aout --> ADS131 AINP
+ADC reads (Aout - Vref) differentially; software adds Vref back
+
+Gain = 1 + Rf/Rg = 11 (nominal)
+```
+
+This is a hybrid fixture: DAC on the NI USB-6212 path, ADC on the STM32/ADS131 path,
+running simultaneously. Bring V+ up before commanding any DAC voltage above 0V, and
+zero the DAC before removing V+.
+
+---
+
+## DC Characterization (`OPA_DC.py` -- `DCTest`)
+
+**Script:** `measurements/dc.py` -- `DCTest` class
+
+Three sequential steps: baseline noise floor, coarse sweep (operating range), fine sweep
+(precise gain, Vos, INL). The coarse sweep auto-determines the linear input range, which
+the fine sweep uses directly -- no manual range setting needed.
+
+```python
+from measurements.dc import DCTest
+dc = DCTest(dac_num=1, dac_ch=1, adc_chip=1, adc_ch=1, tag="opa4388")
+dc.run_all()
+```
+
+**Key parameters:**
+```python
+vref   = 2.5    # reference node voltage (V)
+vpos   = 5.0    # positive supply (V)
+g_nom  = 11.0   # nominal gain (1 + Rf/Rg)
+settle_s = 0.005  # settle time per DAC step (s)
+n_avg    = 64     # frames averaged per point
+```
+
+**OPA4388 results vs datasheet:**
+
+| Parameter | Datasheet spec | Measured | Notes |
+|-----------|---------------|---------|-------|
+| Gain | 11.000 (nominal) | **10.865** | -1.3% -- within 1% resistor tolerance |
+| Vos (fixture) | 0.25 uV typ (chip) | **-1957 uV** | Fixture/resistor limited, not chip Vos |
+| INL | -- | **0.113%** | Asymmetric, steeper near +rail (real RRIO compression) |
+| INL max | -- | **4342 uV out** | Referred to output |
+| Baseline noise | -- | **235 uVrms** | Output node, ADS131 at default OSR |
+| Output swing low | 0V (RRIO) | ~0.05V | Rail limit |
+| Output swing high | 5V (RRIO) | ~5.0V | Rail limit |
+
+The Vos measurement reflects the fixture's resistor mismatch, not the chip's true
+offset (0.25 uV typ, far below what this rig can resolve at gain 11 with 1% resistors).
+
+<img src="/Automated-Analog-IC-Test-Station/img/dc_opa4388.png" alt="OPA4388 DC sweep" style={{width: '100%'}} />
+
+---
+
+## Common-Mode Range (`OPA_cmr.py` -- `CMRTest`)
+
+**Script:** `measurements/cmr.py` -- `CMRTest` class
+
+**Rewire required:** remove Rf and Rg, tie A- directly to Aout (unity gain buffer).
+Sweeps A+ from 0 to Vpos, measures error = Aout - Vin.
+
+```python
+from measurements.cmr import CMRTest
+cmr = CMRTest(dac_num=1, dac_ch=1, adc_chip=1, adc_ch=1, tag="opa4388")
+cmr.run_all()
+```
+
+**OPA4388 results vs datasheet:**
+
+| Parameter | Datasheet spec | Measured | Notes |
+|-----------|---------------|---------|-------|
+| CMR range | 0 to V+ (RRIO input) | **0.05 to 5.0V** | 50mV error threshold |
+| Error within range (mean) | -- | **-422 uV** | Offset from ADC/DAC mismatch |
+| Error within range (RMS) | -- | **4451 uV** | Dominated by gain-1 noise floor |
+
+The error at Vin near 0V (78 mV spike visible in plot) and near 5V (-26 mV drop) are
+real rail proximity effects, not ADC clipping -- the error curves smoothly rather than
+pinning flat at a constant value.
+
+<img src="/Automated-Analog-IC-Test-Station/img/cmr_opa4388.png" alt="OPA4388 CMR sweep" style={{width: '100%'}} />
+
+---
+
+## DC PSRR (`OPA_psrr.py` -- `PSRRTest`)
+
+**Script:** `measurements/psrr_dc.py` -- `PSRRTest` class
+
+Same gain-11 fixture as DC test. Sweeps V+ from 4.5V to 5.5V while holding the input
+fixed, measures change in output referred back to input.
+
+```python
+from measurements.psrr_dc import PSRRTest
+psrr = PSRRTest(dac_num=1, dac_ch=1, adc_chip=1, adc_ch=1, tag="opa4388")
+psrr.run_all()
+```
+
+**OPA4388 results vs datasheet:**
+
+| Parameter | Datasheet spec | Measured | Notes |
+|-----------|---------------|---------|-------|
+| DC PSRR | 130 dB typ | **86.1 dB** | Input-referred, gain=10.86 |
+| V+ sweep range | -- | 4.5 to 5.5V | 1V total variation |
+
+The measured 86.1 dB is lower than the datasheet typical (130 dB) primarily because
+the measurement is limited by the DAC80508 reference stability and ADS131 noise floor
+rather than the amplifier itself. The result is a lower bound on the true PSRR.
+
+<img src="/Automated-Analog-IC-Test-Station/img/psrr_dc_opa4388.png" alt="OPA4388 DC PSRR" style={{width: '100%'}} />
+
+---
+
+## Input Bias Current (`OPA_Ib.py` -- `IbTest`)
+
+**Script:** `measurements/ib.py` -- `IbTest` class
+
+Uses the TIA (OPA3S328, B_2M range, Rf=1.87 MOhm calibrated) to measure the op-amp's
+input bias current at the non-inverting (A+) and inverting (A-) inputs. The fixture
+disconnects Rg/Rf from A- to isolate the input current path.
+
+```python
+from measurements.ib import IbTest
+ib = IbTest(tag="opa4388")
+ib.run_all()
+```
+
+**OPA4388 results vs datasheet:**
+
+| Parameter | Datasheet spec | Measured | Notes |
+|-----------|---------------|---------|-------|
+| Ib+ | 1 pA typ (zero-drift) | **12,755 pA** | TIA noise floor limited |
+| Ib- | 1 pA typ (zero-drift) | **12,766 pA** | TIA noise floor limited |
+| Ios (Ib+ - Ib-) | -- | **-11 pA** | Well within TIA noise -- meaningful |
+| TIA range used | -- | B_2M (1.87 MOhm) | Noise floor ~5 nA |
+
+The absolute Ib values (~12.8 nA) are dominated by the TIA's ~12 nA instrumentation
+offset artifact (documented in the TIA section). The offset is consistent and matches
+the known TIA floor. However, the offset difference Ios = Ib+ - Ib- = -11 pA is
+meaningful -- the common-mode offset cancels, leaving the true differential bias
+current visible below the noise floor.
+
+---
+
+## Step Response (`steptest.py`)
+
+**Script:** `measurements/steptest.py`
+
+Step response uses STM32 GPIO PD9 to generate the input step and the STM32 internal ADC
+(PA1) at 3.2 MSPS via TIM1/TRGO2 and DMA burst capture to record the output. The
+OPA4388 Aout connects to PA1 through a 10k/10k resistor divider (0.5x scaling) to keep
+the output swing within PA1's 3.3V range. 8000 samples are captured per run with 1600
+pre-trigger samples (20%), giving a -500 us to +2000 us window around the step edge.
+
+**Test fixture:**
+```
+STM32 PD9 --> [1k/50 Ohm divider (optional)] --> OPA4388 A+
+OPA4388 Aout --> [10k/10k divider, 0.5x] --> PA1
+Gain-11 feedback unchanged (Rf=100k, Rg=10k, Vref=2.5V)
+```
+
+Two captures were taken on the OPA4388 at gain 11:
+
+**Capture 1 -- full 3.3V GPIO step on A+:**
+
+| Parameter | Value |
+|-----------|-------|
+| Output step size | ~208 mV (reconstructed after divider) |
+| Slew rate | 0.98 V/us |
+| Rise time | under 0.31 us (one sample at 3.2 MSPS -- upper bound) |
+| Overshoot | 112% |
+| Settling (2%) | beyond 2ms capture window |
+
+<img src="/Automated-Analog-IC-Test-Station/img/1783899195416_step_response.png" alt="OPA4388 full step response" style={{width: '100%'}} />
+
+**Capture 2 -- attenuated step via 1k/50 Ohm divider on A+:**
+
+| Parameter | Value |
+|-----------|-------|
+| Output step size | ~39 mV |
+| Slew rate | 0.53 V/us |
+| Rise time | 13.4 us |
+| Overshoot | 80% |
+| Settling (2%) | not within 100 us window |
+
+<img src="/Automated-Analog-IC-Test-Station/img/1783899195416_step_response_reduced.png" alt="OPA4388 reduced step response" style={{width: '100%'}} />
+
+Both captures confirm the step response capture pipeline is working at 3.2 MSPS with
+clean pre-trigger baseline and correct Aout reconstruction via the 10k/10k divider.
+The large overshoot and slow settling reflect the op-amp operating well outside its
+linear small-signal region -- true bandwidth characterization requires a small-signal
+AC sweep (planned as next measurement).
+
+---
+
+## Output Files
+
+Each test saves:
+
+| File | Contents |
+|------|---------|
+| `dc_{tag}.json` | Baseline, coarse, fine sweep results |
+| `dc_{tag}_fine.csv` | Vin, Aout, std, residual per fine point |
+| `dc_{tag}.png` | Coarse sweep + INL residual plot |
+| `cmr_{tag}.json` | CMR sweep results |
+| `cmr_{tag}.csv` | Vin, Aout, error per point |
+| `cmr_{tag}.png` | Unity-gain sweep + error plot |
+| `psrr_dc_{tag}.json` | PSRR sweep results |
+| `psrr_dc_{tag}.csv` | V+, Aout, input-referred error per point |
+| `psrr_dc_{tag}.png` | PSRR vs V+ plot |
+| `ib_{tag}.json` | Ib+, Ib-, Ios in pA |
+
+## Extending to Other Devices
+
+Change the `tag` and channel assignments at instantiation. For a different gain, update
+`g_nom` and the physical Rf/Rg values:
+
+```python
+dc = DCTest(dac_num=1, dac_ch=2, adc_chip=1, adc_ch=2,
+            g_nom=21.0,   # e.g. Rf=200k, Rg=10k
+            tag="lmv321")
+dc.run_all()
+```
+
+## Planned Additions
+
+- AC Bode plot (gain + phase vs frequency, using AO stimulus + ADS131)
+- Input noise PSD (FFT of ADS131 DMA capture)
+- AC PSRR and CMRR vs frequency
+- Output short-circuit current measurement

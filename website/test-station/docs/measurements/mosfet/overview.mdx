@@ -1,0 +1,209 @@
+---
+id: mosfet-overview
+title: MOSFET Measurements
+sidebar_position: 1
+---
+
+# MOSFET Measurements
+
+## Overview
+
+The test station supports automated MOSFET DC characterization through a
+three-test pipeline built on the NI USB-6212 and DAC80508. The pipeline extracts
+threshold voltage, transconductance, output characteristics, and body diode parameters
+with no manual bias point configuration -- Test 1 automatically passes the extracted
+Vth to Test 2 to set appropriate Vgs steps. All tests save timestamped CSV, JSON
+summary, and PNG plot outputs next to the script.
+
+The pipeline was validated on the **SI2302CDS** (Vishay, 20V TrenchFET, SOT-23)
+and is designed to be reusable for any MOSFET by adjusting the sweep ranges and
+resistor values at the top of each script.
+
+## Setup
+
+The same fixture is used for Test 1 and Test 2 with no rewiring between them.
+
+```
+NI AO ch1 --[10 kOhm R_drain]--> Drain (pin 3) --> AI ch0  (V_drain)
+DAC1 CH2  ------------------->   Gate  (pin 1) --> AI ch2  (V_gate)
+                                  Source (pin 2)--> AI ch1  (V_source)
+                                               \--[100 Ohm R_shunt]--> GND
+```
+
+Measured quantities derived from the three voltages:
+```
+Id  = V_source / R_shunt
+Vgs = V_gate - V_source
+Vds = V_drain - V_source
+```
+
+Each point averages 64 samples at 10 kS/s for noise rejection. A 100 ms settle
+delay is applied after each DAC voltage step.
+
+## Configurable Parameters
+
+At the top of each script:
+
+```python
+DEVICE      = "Dev1"       # NI DAQ device name
+R_DRAIN     = 10_000.0     # measure with DMM and update
+R_SHUNT     = 100.0        # measure with DMM and update
+SETTLE      = 0.10         # seconds per bias point
+N_AVG       = 64           # samples averaged per reading
+```
+
+Updating `R_DRAIN` and `R_SHUNT` with DMM-measured values removes the resistor
+tolerance error from all extracted parameters.
+
+---
+
+## Test 1 -- Transfer Curve (Id vs Vgs)
+
+**Script:** `MosTest12.py` -- `run_test1()`
+
+Sweeps Vgs from 0 to 2.5V in 101 steps with Vds fixed at 5V. Extracts threshold
+voltage and peak transconductance automatically.
+
+**Extractions:**
+- **Vth** -- Vgs interpolated at Id = VTH_ID (constant current method)
+- **Peak gm** -- max(dId/dVgs) via numpy gradient
+
+**SI2302CDS results vs datasheet:**
+
+| Parameter | Datasheet spec | Measured | Notes |
+|-----------|---------------|---------|-------|
+| VGS(th) | 0.40-0.85V (Id=250 uA) | **665 mV** | PASS -- different Id threshold (50 uA) |
+| Peak gm | 13 S typ (Id=3.6A) | **1.098 mS** | Low-Id regime -- not comparable to spec |
+| Max Id | -- | **95.9 uA** | R_drain limited (5V / 10kOhm) |
+
+The gm spec in the datasheet is measured at full conduction (Id=3.6A) -- the pipeline
+operates in the low-current regime so the values are not directly comparable. Both
+are valid measurements of different operating points.
+
+<img src="/Automated-Analog-IC-Test-Station/img/test1_final_20260611_181757.png" alt="Transfer curve" style={{width: '100%'}} />
+
+---
+
+## Test 2 -- Output Characteristics (Id vs Vds)
+
+**Script:** `MosTest12.py` -- `run_test2(vth)`
+
+Sweeps Vds from 0 to 10V for multiple Vgs steps. Vgs bias points are set
+automatically from the Vth extracted in Test 1 -- no manual configuration needed.
+
+**Key parameters (adjustable in script):**
+```python
+V_DRAIN_MAX = 10.0    # max Vds sweep voltage (V)
+# Vgs steps auto-generated: 0.7*Vth, Vth, 1.3*Vth, 1.7*Vth, 2.2*Vth, 2.9*Vth
+```
+
+**Extractions per Vgs curve:**
+- **Id_sat** -- mean of final 10 Vds points (saturation current)
+- **RDS(on)** -- extracted from linear region slope for all Vgs curves above Vth
+
+**SI2302CDS measured output characteristics:**
+
+| Vgs | Id_sat | RDS(on) | Notes |
+|-----|--------|---------|-------|
+| 0.47V | off | -- | Below Vth |
+| 0.67V | 72 uA | ~615 Ohm | Near Vth, R_drain dominated |
+| 0.86V | 171 uA | -- | Saturated |
+| 1.20V | 171 uA | -- | Saturated |
+| 1.66V | 171 uA | -- | Saturated |
+| 2.19V | 171 uA | -- | Saturated |
+
+Saturation current is consistent at 171 uA for Vgs above 0.86V across two independent
+runs, confirming measurement repeatability. RDS(on) is only extracted near Vth where
+the linear region is visible -- above that the device fully saturates within the
+R_drain operating point. Datasheet RDS(on) (0.057-0.075 Ohm at Ampere-level Id)
+requires a lower R_drain and a Keithley current source to characterize.
+
+<img src="/Automated-Analog-IC-Test-Station/img/test2_final_20260611_182331.png" alt="Output characteristics" style={{width: '100%'}} />
+
+---
+
+## Test 3 -- Body Diode (Vsd vs Is)
+
+**Script:** `MosTest3.py`
+
+Characterizes the intrinsic body diode by sweeping Source voltage with Gate and Drain
+held at 0V (MOSFET fully off). Uses a 10 kOhm shunt to measure diode current.
+
+**Key parameters:**
+```python
+VSD_START = 0.0
+VSD_STOP  = 1.4      # stay well below breakdown
+VSD_STEPS = 141
+R_SHUNT   = 10_000   # 10 kOhm for Test 3 (different from Test 1/2)
+IS_TH     = 50e-6    # threshold current for Vf extraction
+```
+
+**Extractions:**
+- **Vf** -- Vsd interpolated at Is = IS_TH
+- **Ideality factor n** -- linear fit of log(Is) vs Vsd in the 5-45 uA window
+
+**SI2302CDS body diode results:**
+
+| Parameter | Datasheet spec | Measured | Notes |
+|-----------|---------------|---------|-------|
+| VSD (Vf) | 0.7V typ, 1.2V max (Is=0.95A) | **500 mV** (Is=50 uA) | Well within spec at low current |
+| Ideality n | 1-2 (ideal) | 8.15 | Artifact of 10 kOhm shunt -- see note |
+
+The Vf measurement at 500 mV is reliable. The high ideality factor is a known
+artifact: at low Is the 10 kOhm shunt voltage drop dominates the I-V curve and
+distorts the exponential region used for the fit. The Vf extraction is unaffected.
+A lower shunt value would improve the ideality fit at the cost of current resolution.
+
+<img src="/Automated-Analog-IC-Test-Station/img/test3_final_20260611_180704.png" alt="Body diode" style={{width: '100%'}} />
+
+---
+
+## Output Files
+
+Each test run saves three timestamped files next to the script:
+
+| File | Contents |
+|------|---------|
+| `test1_raw_*.csv` | Vgs_cmd, V_drain, V_source, V_gate, Vgs, Vds, Id per point |
+| `test1_summary_*.json` | Vth, gm, max_Id, pass/fail |
+| `test1_final_*.png` | Linear + log scale transfer curve |
+| `test2_raw_*.csv` | Vds, Id per point per Vgs curve |
+| `test2_summary_*.json` | Id_sat, RDS(on) per Vgs, Vth used |
+| `test2_final_*.png` | Output curves + knee zoom + Id_sat bar chart |
+| `test3_raw_*.csv` | Vsd, Is per point |
+| `test3_summary_*.json` | Vf, ideality n, pass/fail |
+| `test3_final_*.png` | Linear + log scale with ideality fit |
+
+## Running the Pipeline
+
+```python
+# Test 1 + 2 (no rewiring between them)
+python MosTest12.py
+# Runs Test 1, prints results, pauses for confirmation, then runs Test 2
+
+# Test 3 (separate fixture -- rewire shunt to 10 kOhm first)
+python MosTest3.py
+```
+
+## Extending to Other Devices
+
+To characterize a different N-channel MOSFET, update in the script:
+
+```python
+# Adjust sweep ranges for your device's expected Vth
+VGS_STOP  = 5.0      # extend if Vth > 2.5V
+VTH_ID    = 250e-6   # match datasheet Vth test condition if known
+
+# Adjust drain resistor for your expected Id range
+R_DRAIN   = 1_000.0  # lower for higher Id devices
+```
+
+The Vth extracted in Test 1 automatically scales the Vgs bias points for Test 2.
+
+## Planned Additions
+
+- Subthreshold slope (SS = dVgs / d(log Id) in weak inversion)
+- DIBL extraction (Vth shift between two Vds values)
+- gm vs Vgs curve (full transconductance characteristic)
+- Multi-device batch mode with statistical summary (mean, std, min, max across samples)
+- P-channel MOSFET variant (MosTestP.py, negative bias sweeps)
