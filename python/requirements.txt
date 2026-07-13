@@ -1,0 +1,21 @@
+# NI DAQ and instrument control
+nidaqmx>=0.9.0
+pyvisa>=1.13.0
+pyvisa-py>=0.7.0
+
+# STM32 USB CDC communication
+pyserial>=3.5
+
+# Numerical and scientific
+numpy>=1.24.0
+scipy>=1.10.0
+pandas>=2.0.0
+
+# Plotting
+matplotlib>=3.7.0
+
+# Data storage
+h5py>=3.8.0
+
+# Utilities
+tqdm>=4.65.0
