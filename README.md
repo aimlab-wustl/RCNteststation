@@ -39,7 +39,7 @@ The firmware folder contains embedded control code for the STM32-based portion o
 
 ### Python Software
 
-The Python folder contains scripts for controlling the test station and running experiments. Planned functions include:
+The Python folder contains scripts for controlling the test station and running experiments. Functions include:
 
 - DAC voltage setting
 - ADC data acquisition
@@ -59,51 +59,6 @@ website/test-station/
 
 The website documents the system architecture, hardware design, software control, and automation roadmap.
 
-## Running the Website Locally
-
-From the repository root:
-
-```bash
-cd website/test-station
-npm install
-npm start
-```
-
-The local development site will run at:
-
-```text
-http://localhost:3000/RCNteststation/
-```
-
-## Building the Website
-
-To generate the production build:
-
-```bash
-cd website/test-station
-npm run build
-```
-
-## Deployment
-
-The website is deployed using GitHub Actions and GitHub Pages.
-
-The deployment workflow is located at:
-
-```text
-.github/workflows/deploy.yml
-```
-
-The published website is expected to use:
-
-```text
-https://aimlab-wustl.github.io/RCNteststation/
-```
-
 ## Project Status
 
 This project is under active development. Hardware, firmware, software, and documentation will be updated as the test station evolves.
-
-## License
-
-A license has not yet been selected. Before public release, an appropriate open-source license should be added.
