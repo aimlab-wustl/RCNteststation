@@ -10,8 +10,8 @@ const config = {
   url: 'https://aimlab-wustl.github.io',
   baseUrl: '/RCNteststation/',
 
-  organizationName: 'kaiyuank',
-  projectName: 'Automated-Analog-IC-Test-Station',
+  organizationName: 'aimlab-wustl',
+  projectName: 'RCNteststation',
 
   onBrokenLinks: 'throw',
 
@@ -27,7 +27,7 @@ const config = {
       ({
         docs: {
           sidebarPath: './sidebars.js',
-          editUrl: 'https://github.com/kaiyuank/Automated-Analog-IC-Test-Station/tree/main/',
+          editUrl: 'https://github.com/aimlab-wustl/RCNteststation/tree/main/website/test-station/',
         },
         blog: false,
         theme: {
@@ -70,7 +70,7 @@ const config = {
             label: 'PCB Design',
           },
           {
-            href: 'https://github.com/kaiyuank/Automated-Analog-IC-Test-Station',
+            href: 'https://github.com/aimlab-wustl/RCNteststation',
             label: 'GitHub',
             position: 'right',
           },
@@ -105,11 +105,11 @@ const config = {
             items: [
               {
                 label: 'PCB Overview',
-                to: '/pcb/overview',
+                to: '/docs/pcb-design/pcb-overview',
               },
               {
                 label: 'Download Files',
-                to: '/pcb/files',
+                to: '/docs/pcb-design/pcb-files',
               },
             ],
           },
@@ -118,7 +118,7 @@ const config = {
             items: [
               {
                 label: 'GitHub Repository',
-                href: 'https://github.com/kaiyuank/Automated-Analog-IC-Test-Station',
+                href: 'https://github.com/aimlab-wustl/RCNteststation',
               },
             ],
           },

@@ -1,8 +1,8 @@
 import React from 'react';
 import Link from '@docusaurus/Link';
-import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import styles from './index.module.css';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 const capabilities = [
   {
@@ -45,7 +45,8 @@ const measurements = [
 ];
 
 export default function Home() {
-  const { siteConfig } = useDocusaurusContext();
+  const frontPhoto = useBaseUrl('/img/teststation_front.jpg');
+  const backPhoto = useBaseUrl('/img/teststation_back.jpg');
   return (
     <Layout title="Home" description="Automated analog IC test station">
       <main className={styles.main}>
@@ -69,7 +70,7 @@ export default function Home() {
               <Link className={styles.ctaSecondary} to="/docs/getting-started/hardware-setup">
                 Get started
               </Link>
-              <a className={styles.ctaSecondary} href="https://github.com/kaiyuank/Automated-Analog-IC-Test-Station" target="_blank" rel="noopener noreferrer">
+              <a className={styles.ctaSecondary} href="https://github.com/aimlab-wustl/RCNteststation" target="_blank" rel="noopener noreferrer">
                 GitHub
               </a>
             </div>
@@ -79,16 +80,16 @@ export default function Home() {
         {/* ── Photos ── */}
         <section className={styles.photoSection}>
           <div className={styles.photoGrid}>
-            <img
-              src="/Automated-Analog-IC-Test-Station/img/teststation_front.jpg"
-              alt="Test station front view"
-              className={styles.photo}
-            />
-            <img
-              src="/Automated-Analog-IC-Test-Station/img/teststation_back.jpg"
-              alt="Test station back view"
-              className={styles.photo}
-            />
+          <img
+            src={frontPhoto}
+            alt="Test station front view"
+            className={styles.photo}
+          />
+          <img
+            src={backPhoto}
+            alt="Test station back view"
+            className={styles.photo}
+          />
           </div>
         </section>
 

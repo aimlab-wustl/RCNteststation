@@ -82,7 +82,7 @@ n_avg    = 64     # frames averaged per point
 The Vos measurement reflects the fixture's resistor mismatch, not the chip's true
 offset (0.25 uV typ, far below what this rig can resolve at gain 11 with 1% resistors).
 
-<img src="/Automated-Analog-IC-Test-Station/img/dc_opa4388.png" alt="OPA4388 DC sweep" style={{width: '100%'}} />
+![OPA4388 DC sweep](/img/dc_opa4388.png)
 
 ---
 
@@ -111,7 +111,7 @@ The error at Vin near 0V (78 mV spike visible in plot) and near 5V (-26 mV drop)
 real rail proximity effects, not ADC clipping -- the error curves smoothly rather than
 pinning flat at a constant value.
 
-<img src="/Automated-Analog-IC-Test-Station/img/cmr_opa4388.png" alt="OPA4388 CMR sweep" style={{width: '100%'}} />
+![OPA4388 CMR sweep](/img/cmr_opa4388.png)
 
 ---
 
@@ -139,7 +139,7 @@ The measured 86.1 dB is lower than the datasheet typical (130 dB) primarily beca
 the measurement is limited by the DAC80508 reference stability and ADS131 noise floor
 rather than the amplifier itself. The result is a lower bound on the true PSRR.
 
-<img src="/Automated-Analog-IC-Test-Station/img/psrr_dc_opa4388.png" alt="OPA4388 DC PSRR" style={{width: '100%'}} />
+![OPA4388 DC PSRR](/img/psrr_dc_opa4388.png)
 
 ---
 
@@ -203,7 +203,7 @@ Two captures were taken on the OPA4388 at gain 11:
 | Overshoot | 112% |
 | Settling (2%) | beyond 2ms capture window |
 
-<img src="/Automated-Analog-IC-Test-Station/img/1783899195416_step_response.png" alt="OPA4388 full step response" style={{width: '100%'}} />
+![OPA4388 full step response](/img/step_response.png)
 
 **Capture 2 -- attenuated step via 1k/50 Ohm divider on A+:**
 
@@ -215,7 +215,7 @@ Two captures were taken on the OPA4388 at gain 11:
 | Overshoot | 80% |
 | Settling (2%) | not within 100 us window |
 
-<img src="/Automated-Analog-IC-Test-Station/img/1783899195416_step_response_reduced.png" alt="OPA4388 reduced step response" style={{width: '100%'}} />
+![OPA4388 reduced step response](/img/step_response_reduced.png)
 
 Both captures confirm the step response capture pipeline is working at 3.2 MSPS with
 clean pre-trigger baseline and correct Aout reconstruction via the 10k/10k divider.
