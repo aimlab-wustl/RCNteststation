@@ -29,6 +29,6 @@ pcb/
 │       ├── Job-Mother.OutJob
 │       └── Job-Daughter.OutJob
 └── fabrication/
-    ├── MotherBoardGerberV3.zip
-    └── DaughterBoardGerberV3.zip
+    ├── MotherBoardGerber.zip
+    └── DaughterBoardGerber.zip
 ```
