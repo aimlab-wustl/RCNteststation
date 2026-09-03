@@ -28,14 +28,19 @@ The STM32 firmware is located in the repository:
 3. Connect STLINK to the SWD header. See [Hardware Setup](./hardware-setup#swd-programming-port).
 4. Power the board.
 5. Click **Run** or **Debug** to build and flash.
-6. Verify that the USB CDC device enumerates as `COM4` on Windows after flashing.
+6. Verify that the STM32 appears as a USB CDC virtual COM port after flashing.
 
 ### Verifying USB CDC Enumeration
 
-- Windows Device Manager: `STMicroelectronics Virtual COM Port (COM4)`
-- VID: `0483`, PID: `5740`
-- If the COM port does not appear, check the D+/D- solder joints on the USB connector.
+1. Open **Windows Device Manager**.
+2. Expand **Ports (COM & LPT)**.
+3. Find `STMicroelectronics Virtual COM Port`.
+4. Note its assigned port number, such as `COM4` or `COM7`.
+5. Enter that port number as `STM_COM_PORT` in `config.py`.
 
+The expected USB identifiers are VID `0483` and PID `5740`. If the COM
+port does not appear, check the USB cable, driver installation, and the
+D+/D− connections on the board.
 ---
 
 ## 2. Python Environment
@@ -54,13 +59,6 @@ Create the environment and install dependencies:
 conda create -n test-station python=3.13
 conda activate test-station
 pip install -r requirements.txt
-```
-
-If an `environment.yml` file is added later, the environment can instead be created with:
-
-```bash
-conda env create -f environment.yml
-conda activate test-station
 ```
 
 ### Main Python Packages
@@ -170,7 +168,7 @@ print("Keithley:", k.query('*IDN?'))
 Before running any scripts, check `config.py` in the Python root and verify:
 
 ```python
-DEVICE = "Dev1"              # NI DAQ device name -- check NI MAX
-STM_COM_PORT = "COM4"        # STM32 CDC port -- check Device Manager
+DEVICE = "Dev1"              # NI DAQ device name; verify in NI MAX
+STM_COM_PORT = "COM4"        # Replace with the port shown in Device Manager
 DAC_VERSION = "DAC80508"     # "LTC2600" | "AD5676R" | "DAC80508"
 ```

@@ -19,4 +19,6 @@ The long-term goal is a fully automated characterization pipeline where a user c
 
 ## Current Status
 
-Manual Python-driven measurements are working end-to-end for DC characterization. Automation layer is planned for after the full AC measurement pipeline is complete.
+DC characterization pipelines are working end-to-end. AC and noise
+measurements are currently under development. The adaptive automation
+layer is planned after the AC/noise pipeline is validated.

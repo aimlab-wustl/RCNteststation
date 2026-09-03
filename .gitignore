@@ -23,12 +23,20 @@ website/test-station/node_modules/
 website/test-station/.docusaurus/
 website/test-station/build/
 
-# Altium
-pcb/**/*.SchDocPreview
-pcb/**/*.PcbDocPreview
-pcb/**/__Previews/
-pcb/**/History/
-pcb/**/*.Logs/
+# Altium generated and local files
+**/__Previews/
+**/History/
+**/Project Logs*/
+**/Project Outputs*/
+**/CompareHistory/
+
+**/*.SchDocPreview
+**/*.PcbDocPreview
+**/*.PcbDoc.htm
+**/*.metadata
+**/*.PrjPcbStructure
+**/*.PrjMbdStructure
+**/*.ldb
 
 # OS
 .DS_Store

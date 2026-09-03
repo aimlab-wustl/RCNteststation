@@ -8,14 +8,18 @@ sidebar_position: 5
 
 ## Overview
 
-Two ADS131A04 chips provide 8 differential input channels of 24-bit precision measurement,
-driven by the STM32 via SPI2 with DMA. Each chip has 4 differential channels with an
-optional input buffer and RC anti-aliasing filter. The ADC subsystem supports continuous
-live streaming to the PC over USB Full-Speed, with real-time plotting and CSV recording
-running indefinitely. Offset calibration is available on all channels to remove residual input offsets and improve measurement accuracy.
+Two ADS131A04 ADCs provide eight differential input channels with 24-bit
+conversion. The STM32 communicates with both ADCs through SPI2 and supports
+DMA-based acquisition. Each motherboard input channel includes an optional
+external OPA4388 unity-gain buffer followed by an RC anti-aliasing filter.
 
-The maximum reliable DMA streaming speed is **62.5 kSPS** (OSR_32), confirmed with zero
-overrun errors. The ADS131A04 datasheet specifies 128 kSPS as the chip maximum (OSR_16).
+Blocking acquisition can read all eight channels sequentially. Because both
+ADCs share SPI2 and the current DMA implementation selects one ADC at a time,
+continuous DMA streaming captures four simultaneous channels from one chip.
+
+With the current clock configuration, the highest tested streaming rate is
+62.5 kSPS per channel at OSR32. Offset calibration is available for all eight
+channels to remove residual system offsets.
 
 ## Schematic
 
@@ -32,22 +36,21 @@ overrun errors. The ADS131A04 datasheet specifies 128 kSPS as the chip maximum (
 | LSB size | 476 nV |
 | Default data rate | 8.0 kSPS (OSR_256) |
 | Max reliable data rate | 62.5 kSPS (OSR_32, DMA streaming) |
-| Chip maximum | 128 kSPS (OSR_16, datasheet) |
-| Effective resolution | 20.6 bits at 8 kSPS |
-| THD | -100 dB at 50/60 Hz |
 | MCLK | 8 MHz (STM32 MCO1, PA8) |
 | Interface | SPI2 + DMA1 Stream3 |
 
 ### Data Rate Options
 
-| OSR | Data Rate | Notes |
-|-----|-----------|-------|
-| 4096 | 0.5 kSPS | Lowest noise, DC only |
-| 1024 | 2.0 kSPS | Low frequency signals |
-| 256 | 8.0 kSPS | Default |
-| 128 | 16.0 kSPS | AC up to ~5 kHz |
-| 32 | 62.5 kSPS | Max reliable (DMA, validated) |
-| 16 | 128 kSPS | Chip max (not yet validated) |
+The following rates use the current 2 MHz modulator clock:
+
+| OSR | Data rate | Typical use |
+|-----|-----------|-------------|
+| 4096 | 0.488 kSPS | Lowest-noise DC acquisition |
+| 1024 | 1.953 kSPS | Low-frequency measurements |
+| 400 | 5.000 kSPS | TIA B_20K range |
+| 256 | 7.8125 kSPS | Default voltage acquisition |
+| 128 | 15.625 kSPS | Higher-bandwidth acquisition |
+| 32 | 62.500 kSPS | Highest tested DMA rate |
 
 ## Hardware Configuration
 
@@ -67,11 +70,24 @@ overrun errors. The ADS131A04 datasheet specifies 128 kSPS as the chip maximum (
 
 ### Signal Conditioning
 
-Each differential input pair has an optional unity-gain buffer followed by an RC anti-aliasing filter. The buffer is implemented with the OPA4388 -- the same zero-drift, zero-crossover precision op-amp used on the NI DAQ analog input path -- providing negligible offset (0.25 uV typ), no 1/f noise, and 140 dB CMRR without degrading the ADC input. It can be bypassed via solder jumper -- leave it active for high-impedance sources, bypass it when source impedance is low. The RC filter rolls off high-frequency content before the ADC; see schematic for cutoff frequency.
+Each differential input pair includes an optional external OPA4388
+unity-gain buffer followed by an RC anti-aliasing filter. The OPA4388 is
+located on the motherboard and is not integrated into the ADS131A04.
+
+For the quad OPA4388, the input offset voltage is ±2.25 µV typical and
+±8 µV maximum at a 5.5 V supply. Its zero-drift architecture provides
+stable low-frequency performance and very low 1/f noise. The buffer can be
+bypassed using a solder jumper: enable it for high-impedance sources and
+bypass it when the source impedance is sufficiently low. See the schematic
+for the RC-filter cutoff frequency.
 
 ### DMA Streaming
 
-When a conversion completes, the ADS131A04 asserts DRDY low, triggering an EXTI interrupt on the STM32. DMA immediately pulls all 15 bytes of the SPI frame (status + 4 channel samples) into non-cacheable SRAM without CPU involvement. Completed frames are written into a 256-slot ring buffer, which a background task drains into binary USB CDC packets. On the PC, `read_dma()` unpacks 24-bit samples into numpy arrays and updates a live plot in real time. Both chips share SPI2, so only one streams at a time, selected by `g_ads131_dma_stream_chip`.
+When a conversion completes, the ADS131A04 asserts DRDY low, triggering an EXTI interrupt on the STM32. DMA immediately pulls all 15 bytes of the SPI frame (status + 4 channel samples) into non-cacheable SRAM without CPU involvement. Completed frames are written into a 256-slot ring buffer, which a background task drains into binary USB CDC packets. On the PC, `read_dma()` unpacks 24-bit samples into numpy arrays and updates a live plot in real time.
+Because the two ADCs share SPI2 and the current DMA implementation selects
+one chip at a time, DMA streaming captures four simultaneous channels from
+one ADC. `ADS131A04_ReadBoth()` and the Python `read_all()` method read all
+eight channels sequentially.
 
 ## Firmware
 
@@ -91,8 +107,10 @@ DMA functions `ADS131A04_DMA_StartChip()` and `ADS131A04_DMA_RxComplete()` are c
 ## Python API (`ads131a04.py`)
 
 ```python
+from config import STM_COM_PORT
 from hardware.ads131a04 import ADS131
-adc = ADS131(port='COM4')
+
+adc = ADS131(port=STM_COM_PORT)
 
 # -- Setup --
 adc.load_cal()                 # load saved offset calibration (run once at session start)
@@ -133,6 +151,6 @@ DMA streaming runs stably at **62.5 kSPS** (OSR_32) with zero overrun errors. De
 
 ![5kHz sine at 62.5kSPS](../../../static/img/ADS131_5kSin.png)
 
-**10 mVpp signal at ~8 kSPS** -- 10 mVpp signal (10,000 uV peak-to-peak) resolved clearly above the noise floor, with smooth consistent waveform shape across a 0.4s window. Confirms sub-millivolt resolution in real measurement conditions.
+**10 mVpp signal at ~8 kSPS** -- 10 mVpp signal (10,000 uV peak-to-peak) resolved clearly above the noise floor, with smooth consistent waveform shape across a 0.4s window.
 
 ![10mVpp at 8kSPS](../../../static/img/ADS131a04_10mVpp.png)

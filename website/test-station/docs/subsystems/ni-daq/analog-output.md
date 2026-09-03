@@ -40,7 +40,7 @@ write_single(1, -1.0)            # ao1 = -1.0V
 # Set both channels simultaneously
 write_all([1.0, 2.5])            # ao0=1.0V, ao1=2.5V
 
-# Safe shutdown -- set all outputs to minimum rail voltage
+# Safe shutdown -- set both outputs to 0 V
 zero_all()
 ```
 
@@ -52,7 +52,3 @@ AO_VOLTAGE_RANGE = (0.0, 10.0)   # clamp range for write_single/write_all
 ```
 
 Values outside `AO_VOLTAGE_RANGE` are clamped with a warning rather than raising an error.
-
-## Measured Performance
-
-*AO accuracy vs commanded voltage -- to be added*

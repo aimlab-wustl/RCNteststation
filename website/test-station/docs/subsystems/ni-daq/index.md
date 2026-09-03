@@ -11,8 +11,9 @@ sidebar_position: 2
 The NI USB-6212 is a USB multifunction DAQ providing analog input, analog output,
 digital I/O, PFI timing, and counter channels. It connects to the motherboard via an
 edge connector and serves as one of the two control paths for the test station.
-All I/O is software-timed via NI-DAQmx -- the USB-6212 has no onboard processor
-and relies on the host PC for sequencing.
+The analog inputs, analog outputs, and counter functions support hardware-timed
+operation through NI-DAQmx. General-purpose digital I/O is software-timed and
+relies on the host PC for sequencing.
 
 ## Key Specifications
 
@@ -20,7 +21,7 @@ and relies on the host PC for sequencing.
 |-----------|-------|
 | Analog inputs | 16 single-ended or 8 differential |
 | AI resolution | 16-bit |
-| AI max sample rate | 400 kS/s (single channel) |
+| AI max sample rate | 400 kS/s aggregate |
 | AI input ranges | +/-0.2V, +/-1V, +/-5V, +/-10V |
 | AI CMRR (DC-60Hz) | 100 dB |
 | AI absolute accuracy (10V range) | 2,710 uV full scale |
@@ -29,8 +30,8 @@ and relies on the host PC for sequencing.
 | AO max update rate | 250 kS/s per channel |
 | AO output range | +/-10V |
 | AO output impedance | 0.2 Ohm, +/-2 mA drive |
-| Digital I/O | 32 lines (P0.0-15, PFI0-15) |
-| DIO logic level | 5V TTL |
+| Digital I/O | 8 lines (P0.0–P0.7) |
+| DIO logic level | 5V |
 | DIO reliable toggle rate | ~1 kHz (software-timed) |
 | DIO output current | 16 mA max per pin |
 | PFI channels | PFI0-PFI15 |

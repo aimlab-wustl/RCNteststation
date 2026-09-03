@@ -8,9 +8,9 @@ sidebar_position: 1
 
 ## Overview
 
-The test station is built around two parallel control paths -- the NI USB-6212 DAQ
-and the STM32H743 MCU -- that share the same DAC bias generation hardware, selectable
-by shunt jumper. All signals to and from the DUT route through a ZIF40 connector chain
+The test station is built around two parallel control paths -- NI USB-6212 DAQ
+and STM32H743 MCU -- that share the same DAC bias generation hardware, selectable
+by jumper. All signals to and from the DUT route through a ZIF40 connector chain
 on the motherboard into a daughterboard then to a package-specific DUT adapter.
 
 ## Block Diagram
@@ -18,8 +18,7 @@ on the motherboard into a daughterboard then to a package-specific DUT adapter.
 ![AIMLAB system block diagram](/img/blockdiagram.png)
 
 The two control paths (NI USB-6212 and STM32H743) connect to the host PC over USB.
-Both can drive the DAC80508 daisy chain for bias voltage generation, selected by a
-shunt jumper. The STM32 exclusively controls the ADS131A04 ADC via SPI2 DMA for
+Both can drive the DAC80508 daisy chain for bias voltage generation, selected by a jumper. The STM32 exclusively controls the ADS131A04 ADC via SPI2 DMA for
 voltage measurement, and the OPA3S328 TIA gain selection via GPIO for current
 measurement. The TIA output feeds back into the ADS131 so current readings are
 digitized directly by the ADC. DIO lines from both controllers pass through

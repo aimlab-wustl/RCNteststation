@@ -8,10 +8,9 @@ sidebar_position: 4
 
 ## Overview
 
-PFI0-PFI15 are programmable function interface lines that can carry timing signals,
-triggers, or serve as high-speed digital I/O. The USB-6212 has two 32-bit hardware
-counters (ctr0, ctr1) with an 80 MHz base clock, capable of generating precise pulse
-trains, counting edges, and measuring frequency -- all without software timing overhead.
+PFI0–PFI15 are programmable function interface terminals. They can operate
+as static digital I/O or route hardware timing signals, including triggers,
+sample clocks, and counter inputs and outputs.
 
 ## Key Specifications
 
@@ -23,13 +22,14 @@ trains, counting edges, and measuring frequency -- all without software timing o
 | Base clock accuracy | 50 ppm |
 | Counter functions | Pulse generation, edge count, frequency, period, two-edge separation |
 | Default counter output | ctr0 -> PFI12, ctr1 -> PFI13 |
-| PFI input protection | +/-10V |
-| Debounce filter | 125 ns, 6.4 us, 2.56 ms (selectable per input) |
+| Input voltage protection | ±20 V on up to eight DIO/PFI pins |
+| Debounce filter | 125 ns, 6.425 µs, 2.56 ms, or disabled |
 
 ## Python API (`pfi.py`)
 
 ```python
 from hardware import generate_pulse, stop_pulse, count_edges, measure_frequency, arm_ai_trigger
+import time
 
 # Generate hardware pulse train -- no CPU involvement once started
 task = generate_pulse(
@@ -62,7 +62,7 @@ with nidaqmx.Task() as task:
     data = task.read(number_of_samples_per_channel=1000)
 ```
 
-### Common Use Cases in AIMLAB
+### Common Use Cases
 
 - **Synchronized capture** -- trigger AI acquisition from an external event on PFI0
 - **Stimulus + capture** -- generate a step on AO0, trigger ADC capture via PFI
@@ -72,5 +72,3 @@ with nidaqmx.Task() as task:
 ## Measured Performance
 
 Hardware counter pulse output confirmed up to **10 MHz** on PFI pins.
-
-*PFI trigger jitter, counter accuracy measurements -- to be added*

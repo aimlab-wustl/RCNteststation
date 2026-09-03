@@ -12,24 +12,25 @@ The test station provides automated measurement pipelines for characterizing ana
 Each pipeline runs from Python, saves timestamped outputs, and is designed to be reused
 across different DUTs by changing a small set of parameters at instantiation.
 
-All measurements use a hybrid path: DAC80508 (NI USB-6212) for bias and stimulus,
-ADS131A04 (STM32) for precision voltage measurement, OPA3S328 TIA for current
-measurement, and the STM32 internal ADC for fast transient capture.
+Depending on the pipeline, measurements combine the DAC80508 and NI USB-6212
+for bias generation and low-speed acquisition, the ADS131A04 for precision
+voltage acquisition, the OPA3S328 TIA for current measurement, and the STM32
+internal ADC for transient capture.
 
 ## Available Pipelines
 
 | Pipeline | Script | Extracts | Status |
 |----------|--------|---------|--------|
-| [MOSFET -- Transfer curve](./mosfet/mosfet-overview#test-1----transfer-curve-id-vs-vgs) | `MosTest12.py` | Vth, peak gm, max Id | Done |
-| [MOSFET -- Output characteristics](./mosfet/mosfet-overview#test-2----output-characteristics-id-vs-vds) | `MosTest12.py` | Id-Vds family, Id_sat, RDS(on) | Done |
-| [MOSFET -- Body diode](./mosfet/mosfet-overview#test-3----body-diode-vsd-vs-is) | `MosTest3.py` | Vf, ideality factor n | Done |
-| [Op-Amp -- DC](./opamp/opamp-overview#dc-characterization-opa_dcpy----dctest) | `OPA_DC.py` | Gain, Vos, INL, output swing, noise floor | Done |
-| [Op-Amp -- CMR](./opamp/opamp-overview#common-mode-range-opa_cmrpy----cmrtest) | `OPA_cmr.py` | Common-mode input range | Done |
-| [Op-Amp -- DC PSRR](./opamp/opamp-overview#dc-psrr-opa_psrrpy----psrrtest) | `OPA_psrr.py` | DC power supply rejection | Done |
-| [Op-Amp -- Input bias current](./opamp/opamp-overview#input-bias-current-opa_ibpy----ibtest) | `OPA_Ib.py` | Ib+, Ib-, Ios | Done |
-| [Op-Amp -- Step response](./opamp/opamp-overview#step-response-steptestpy) | `steptest.py` | Slew rate, rise time, overshoot | Done |
-| Op-Amp -- AC Bode | planned | Gain + phase vs frequency, bandwidth | Planned |
-| Op-Amp -- Noise PSD | planned | Input-referred noise spectral density | Planned |
+| [MOSFET -- Transfer curve](./mosfet/mosfet-overview#test-1----transfer-curve-id-vs-vgs) | `MosTest12.py` | Vth, peak gm, max Id | Implemented |
+| [MOSFET -- Output characteristics](./mosfet/mosfet-overview#test-2----output-characteristics-id-vs-vds) | `MosTest12.py` | Id-Vds family, Id_sat, RDS(on) | Implemented |
+| [MOSFET -- Body diode](./mosfet/mosfet-overview#test-3----body-diode-vsd-vs-is) | `MosTest3.py` | Vf, ideality factor n | Implemented |
+| [Op-Amp -- DC](./opamp/opamp-overview#dc-characterization-opa_dcpy----dctest) | `OPA_DC.py` | Gain, Vos, INL, output swing, noise floor | Implemented |
+| [Op-Amp -- CMR](./opamp/opamp-overview#common-mode-range-opa_cmrpy----cmrtest) | `OPA_cmr.py` | Common-mode input range | Implemented |
+| [Op-Amp -- DC PSRR](./opamp/opamp-overview#dc-psrr-opa_psrrpy----psrrtest) | `OPA_psrr.py` | DC power supply rejection | Implemented |
+| [Op-Amp -- Input bias current](./opamp/opamp-overview#input-bias-current-opa_ibpy----ibtest) | `OPA_Ib.py` | Ib+, Ib-, Ios | Implemented |
+| [Op-Amp -- Step response](./opamp/opamp-overview#step-response-steptestpy) | `steptest.py` | Slew rate, rise time, overshoot | Implemented |
+| Op-Amp -- AC Bode | — | Gain + phase vs frequency, bandwidth | In progress |
+| Op-Amp -- Noise PSD | — | Input-referred noise spectral density | In progress |
 
 ## Output Files
 

@@ -19,7 +19,7 @@ Channels can be configured as 16 single-ended or 8 differential in software.
 |-----------|-------|
 | Channels | 16 single-ended or 8 differential |
 | Resolution | 16-bit |
-| Max sample rate | 400 kS/s (single channel, aggregate) |
+| Max sample rate | 400 kS/s aggregate |
 | Input ranges | +/-0.2V, +/-1V, +/-5V, +/-10V |
 | CMRR (DC-60Hz) | 100 dB |
 | Input impedance (on) | >10 GOhm in parallel with 100 pF |
@@ -27,7 +27,7 @@ Channels can be configured as 16 single-ended or 8 differential in software.
 | Absolute accuracy (10V range) | 2,710 uV full scale |
 | Absolute accuracy (0.2V range) | 89 uV full scale |
 | Small signal bandwidth | 1.5 MHz |
-| Overvoltage protection | +/-30V (device on) |
+| Overvoltage protection | ±30 V on up to two AI pins while powered |
 
 ## Signal Conditioning -- OPA4388 Input Buffer
 
@@ -38,13 +38,21 @@ which is important for low-frequency and DC characterization measurements.
 
 | Parameter | OPA4388 Value |
 |-----------|--------------|
-| Offset voltage | +/-0.25 uV typ, +/-8 uV max (quad) |
+| Offset voltage | ±2.25 µV typical, ±8 µV maximum |
 | Offset drift | +/-0.005 uV/degC |
 | Noise density | 7 nV/sqrtHz @ 1kHz (no 1/f noise) |
 | Low freq noise | 0.14 uVpp (0.1-10Hz) |
 | CMRR | 140 dB |
 | GBW | 10 MHz |
 | Settling time | 2 us to 0.01% |
+
+:::caution Buffered-Channel Input Range
+
+Although the USB-6212 supports bipolar input ranges up to ±10 V, AI0–AI3
+pass through an OPA4388 powered from the 5 V analog rail. These buffered
+channels are intended for approximately 0–5 V signals. AI4–AI15 connect
+directly to the DAQ and retain the native USB-6212 input ranges.
+:::
 
 ## Python API (`ai.py`)
 
@@ -90,5 +98,3 @@ AI_DEFAULT_SAMPLES = 4_000
 Single-channel acquisition confirmed at **400 kS/s** with live streaming and CSV
 recording. `read_continuous()` uses a hardware-clocked callback -- no samples are
 dropped between chunks at full rate.
-
-*Noise floor and accuracy plots at each input range -- to be added*

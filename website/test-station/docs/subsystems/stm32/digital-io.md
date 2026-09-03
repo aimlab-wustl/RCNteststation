@@ -8,47 +8,39 @@ sidebar_position: 1
 
 ## Overview
 
-The STM32H743 provides 18 GPIO lines across GPIOD. All output pins have a 22 Ohm
-series resistor before the connector to limit transient currents. The MCU runs at 3.3V.
-DIO0-7 (PD0-7) pass through an SN74LVC8T245DGVR voltage translator identical to the
-NI DAQ path, allowing the STM32 to interface with DUT logic at 1.8V, 3.3V, or 5V.
-DIO8-9 and DIO12-15 connect directly at 3.3V.
+The STM32H743 exposes 14 digital I/O lines from GPIOD. Each line includes
+a 22 Ω series resistor to limit transient current and reduce signal ringing.
+DIO0–7 pass through an SN74LVC8T245 voltage translator, allowing the STM32
+to communicate with DUT logic at 1.8 V, 3.3 V, or 5 V. These eight lines
+share one hardware-selected direction. 
+DIO8–9 and DIO12–15 connect directly to the DUT interface at 3.3 V and
+can be configured individually as inputs or outputs. DIO10–11 are not
+exposed through this interface.
 
 ## Pin Mapping
 
-| Label | STM32 Pin | Type | Notes |
-|-------|-----------|------|-------|
-| DIO0 | PD0 | Bidirectional | Translated (SN74LVC8T245), direction by jumper |
-| DIO1 | PD1 | Bidirectional | Translated, direction by jumper |
-| DIO2 | PD2 | Bidirectional | Translated, direction by jumper |
-| DIO3 | PD3 | Bidirectional | Translated, direction by jumper |
-| DIO4 | PD4 | Bidirectional | Translated, direction by jumper |
-| DIO5 | PD5 | Bidirectional | Translated, direction by jumper |
-| DIO6 | PD6 | Bidirectional | Translated, direction by jumper |
-| DIO7 | PD7 | Bidirectional | Translated, direction by jumper |
-| DIO8 | PD8 | Bidirectional | Direct 3.3V, switchable direction |
-| DIO9 | PD9 | Bidirectional | Direct 3.3V, switchable direction |
-| DIO12 | PD12 | Bidirectional | Direct 3.3V, switchable direction |
-| DIO13 | PD13 | Bidirectional | Direct 3.3V, switchable direction |
-| DIO14 | PD14 | Bidirectional | Direct 3.3V, switchable direction |
-| DIO15 | PD15 | Bidirectional | Direct 3.3V, switchable direction |
+| DIO lines | STM32 pins | Count | Interface |
+|-----------|------------|-------|-----------|
+| DIO0–7 | PD0–PD7 | 8 | Level-translated; bank direction selected by jumper |
+| DIO8–9 | PD8–PD9 | 2 | Direct 3.3 V; individually configurable direction |
+| DIO12–15 | PD12–PD15 | 4 | Direct 3.3 V; individually configurable direction |
 
-## Level Translation -- SN74LVC8T245
+## Level Translation — SN74LVC8T245
 
-DIO0-7 pass through an SN74LVC8T245DGVR translator. The STM32 connects to the A side
-at 3.3V. The B side faces the DUT bus, with voltage set by shunt jumper. Direction of the
-entire 8-bit bank is controlled by a shunt jumper on the DIR pin --
-all 8 lines switch direction together.
+DIO0–7 pass through an SN74LVC8T245 voltage translator. The STM32 connects
+to side B at 3.3 V, while side A faces the DUT bus and uses the voltage
+selected by the shunt jumper. All eight lines share one direction setting.
 
 | Parameter | Value |
 |-----------|-------|
-| A side (STM32) | 3.3V |
-| B side (DUT bus) | Jumper: 1.8V / 3.3V / 5.0V |
+| B side | STM32, 3.3 V |
+| A side | DUT bus, selectable 1.8 V / 3.3 V / 5 V |
+| Direction control | One jumper for the complete 8-bit bank |
 
-| Jumper | State | DIR | Data flow | Effect |
-|--------|-------|-----|-----------|--------|
-| JP populated | VCCA | HIGH | A -> B | STM32 drives DUT |
-| JP removed | GND | LOW | B -> A | STM32 reads DUT |
+| Jumper | DIR | Data flow | Effect |
+|--------|-----|-----------|--------|
+| Populated | HIGH | A → B | STM32 reads DUT |
+| Removed | LOW | B → A | STM32 drives DUT |
 
 ## Speed Specifications
 
@@ -68,7 +60,7 @@ but do not significantly affect speed at typical load capacitances on the board.
 Driver files: `dio.c`, `dio.h`
 
 ```c
-// PD0-PD7: write only
+// PD0-PD7: bank direction selected by hardware jumper
 void    DIO_Write(uint8_t pin, uint8_t state);
 uint8_t DIO_Read(uint8_t pin);
 
@@ -88,7 +80,7 @@ uint8_t DIO_ReadPWM(uint8_t pin);
 ```python
 from hardware.stm_dio import STMDIO
 
-dio = STMDIO()                        # connects on COM4
+dio = STMDIO()                        # connects using the configured COM port
 
 # Write a single pin (0=LOW, 1=HIGH)
 dio.write(3, 1)                       # PD3 high
@@ -116,7 +108,3 @@ dio.pulse(0, duration_ms=5.0)        # 5ms pulse on PD0
 dio.clear_all()                       # zero PD0-PD7
 dio.print_state()                     # print all pin states to console
 ```
-
-## Measured Performance
-
-*DIO switching speed and timing characterization -- to be added*

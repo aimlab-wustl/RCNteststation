@@ -16,7 +16,7 @@ Vth to Test 2 to set appropriate Vgs steps. All tests save timestamped CSV, JSON
 summary, and PNG plot outputs next to the script.
 
 The pipeline was validated on the **SI2302CDS** (Vishay, 20V TrenchFET, SOT-23)
-and is designed to be reusable for any MOSFET by adjusting the sweep ranges and
+and is designed to be reusable for other N-channel MOSFETs within the station's voltage and current limits by adjusting the sweep ranges and
 resistor values at the top of each script.
 
 ## Setup
@@ -61,7 +61,9 @@ tolerance error from all extracted parameters.
 
 **Script:** `MosTest12.py` -- `run_test1()`
 
-Sweeps Vgs from 0 to 2.5V in 101 steps with Vds fixed at 5V. Extracts threshold
+Sweeps Vgs from 0 to 2.5 V in 101 steps while the drain-bias source is
+set to 5 V through the 10 kΩ drain resistor. The actual Vds is calculated
+from the measured drain and source voltages. Extracts threshold
 voltage and peak transconductance automatically.
 
 **Extractions:**
@@ -112,11 +114,12 @@ V_DRAIN_MAX = 10.0    # max Vds sweep voltage (V)
 | 1.66V | 171 uA | -- | Saturated |
 | 2.19V | 171 uA | -- | Saturated |
 
-Saturation current is consistent at 171 uA for Vgs above 0.86V across two independent
-runs, confirming measurement repeatability. RDS(on) is only extracted near Vth where
-the linear region is visible -- above that the device fully saturates within the
-R_drain operating point. Datasheet RDS(on) (0.057-0.075 Ohm at Ampere-level Id)
-requires a lower R_drain and a Keithley current source to characterize.
+The approximately 171 µA plateau was repeatable across two runs. However,
+because the measurement uses a 10 kΩ drain resistor, these results represent
+the combined MOSFET-and-fixture load line rather than the device's intrinsic
+high-current saturation characteristics. The reported resistance near
+threshold should likewise be treated as an apparent low-current resistance,
+not the datasheet RDS(on).
 
 ![Output characteristics](/img/test2_final_20260611_182331.png)
 

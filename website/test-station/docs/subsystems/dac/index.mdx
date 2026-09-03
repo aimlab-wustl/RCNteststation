@@ -8,17 +8,27 @@ sidebar_position: 4
 
 ## Overview
 
-Five 16-bit 8-channel DACs provide 40 independently programmable DC bias channels for DUT biasing. The DACs are controlled via a daisy chain driven either by the NI USB-6212 or the STM32, selectable by a shunt jumper. DAC4 and DAC5 have per-channel RC filters on their outputs for noise-sensitive measurements.
+Five 16-bit, 8-channel DACs provide 40 independently programmable DC bias
+channels. The devices are connected in a five-chip daisy chain using an
+SPI-compatible serial protocol generated through GPIO bit-banging. The chain
+can be controlled by either the NI USB-6212 or the STM32, selected by a shunt
+jumper. DAC4 and DAC5 include per-channel RC output filters for noise-sensitive
+measurements.
 
 ## Version History
 
-Three DAC chips have been used across board generations, all in the same 5-chip daisy-chain topology. The LTC2600 and AD5676R require a dedicated hardware clear/reset pin making them 5-wire interfaces, while the DAC80508 handles reset in software over a clean 4-wire SPI bus.
+Three DAC families have been used across board generations, all with the
+same five-chip daisy-chain topology. Each version uses serial data, clock,
+and chip-select or synchronization signals, with serial-data-output
+connections between adjacent devices. The LTC2600 and AD5676R require an
+additional hardware clear or reset signal, while the DAC80508 supports
+software reset.
 
-| Version | Chip | Output Range | INL | Interface |
-|---------|------|-------------|-----|-----------|
-| V1 | LTC2600 | 0-4V (external VREF) | +/-2 LSB typ | 5-wire (CLR, SDI, SCK, CS, DVDD) |
-| V2 | AD5676R | 0-5V | +/-3 LSB max | 5-wire (RESET, SDI, SCK, SYNC, DVDD) |
-| V3 (current) | DAC80508 | 0-5V | +/-1 LSB max | 4-wire SPI (SDI, SCLK, CS, DVDD) |
+| Version | Chip | Output range | INL | Interface |
+|---------|------|--------------|-----|-----------|
+| V1 | LTC2600 | 0–4 V with external reference | ±2 LSB typical | Serial interface with hardware clear |
+| V2 | AD5676R | 0–5 V | ±3 LSB maximum | SPI-compatible interface with hardware reset |
+| V3 (current) | DAC80508 | 0–5 V | ±1 LSB maximum | SPI-compatible interface with software reset |
 
 The active version is selected in `config.py`:
 
@@ -47,7 +57,7 @@ DAC_VERSION = "DAC80508"   # "LTC2600" | "AD5676R" | "DAC80508"
 | Slew rate | 0.8 V/us | 0.8 V/us | 1.8 V/us |
 | Short-circuit current | +/-15 mA min | 40 mA | 30 mA |
 | Supply range | 2.5-5.5V | 2.7-5.5V | 2.7-5.5V |
-| SPI clock max | 50 MHz | 50 MHz | 50 MHz |
+| Serial-clock limit | 50 MHz | 50 MHz | Up to 25 MHz in daisy-chain mode |
 | Temperature range | -40 to 85 °C | -40 to 125 °C | -40 to 125 °C |
 
 ## Hardware Configuration
@@ -55,6 +65,19 @@ DAC_VERSION = "DAC80508"   # "LTC2600" | "AD5676R" | "DAC80508"
 ### Reference Selection
 
 A 0 Ohm resistor jumper controls whether the DAC80508 uses its internal 2.5V reference or the external ADR4525CRZ. When the resistor is populated, the REF pin connects to the ADR4525 output. When removed, the internal reference is active. Both give the same 0-5V output range.
+
+:::warning External Reference Selection
+
+When the external ADR4525 reference is connected, the DAC80508 internal
+reference must be disabled. Enabling both references simultaneously causes
+the two voltage sources to contend and can corrupt the DAC output.
+
+For the NI control path, initialize the DAC using
+`dac_initialize(use_external_ref=True)`. The STM32 firmware must likewise
+disable the internal reference when the external-reference jumper is
+populated.
+
+:::
 
 ### Control Path Selection
 
@@ -127,7 +150,3 @@ clear_all()
 # Print 5x8 shadow state table
 print_state()
 ```
-
-## Measured Performance
-
-*DAC output accuracy, settling time, output noise -- to be added*

@@ -6,17 +6,11 @@ sidebar_position: 1
 
 # AIMLAB Automated Analog IC Test Station
 
-When you tape out an analog IC, characterizing it thoroughly and repeatably across
-multiple samples is one of the hardest parts of the job. Manual bench measurements
-are slow, inconsistent, and difficult to document. The AIMLAB test station was built
-to solve this -- a fully Python-controlled, precision measurement platform that runs
-complete characterization sweeps automatically, saves structured data, and produces
-publication-ready plots with no manual intervention.
+After an analog IC is fabricated, thoroughly and repeatably characterizing multiple devices can be one of the most demanding stages of development. Conventional bench measurements are often time-consuming, difficult to reproduce, and cumbersome to document. The AIMLAB test station addresses these challenges through an automated precision measurement platform that performs complete characterization sweeps, stores structured data, and generates publication-ready plots through a unified Python interface.
 
 ## What the Station Does
 
-The station generates programmable DC bias across 40 independent channels, measures
-voltage with 24-bit precision, measures current down to the nanoamp range, and captures
+The station generates programmable DC bias across 40 independent channels, provides 24-bit voltage acquisition, measures current down to the nanoamp range, and captures
 transient waveforms at up to 3.2 MSPS -- all from a single Python session. Two
 independent control paths (NI USB-6212 and STM32H743) share the same hardware and
 can be selected by jumper, giving flexibility for different measurement needs.
@@ -53,7 +47,7 @@ The station is built around five purpose-designed subsystems:
 - **STM32H743 MCU** at 480 MHz providing USB CDC control, fast burst ADC capture,
   GPIO, and SPI2 DMA -- all accessible from Python over a simple ASCII command protocol
 - **NI USB-6212** providing 16-channel 16-bit analog input at 400 kS/s, two analog
-  outputs, 32 digital I/O lines, and hardware counter/trigger via PFI
+  outputs, 8 general-purpose digital I/O lines, and hardware counter/trigger via PFI
 
 All subsystems are documented with hardware specs, firmware API, Python API, and
 measured performance results.

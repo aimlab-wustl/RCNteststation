@@ -21,24 +21,26 @@ Two LM1086 LDOs generate the 5V and 3.3V rails using an adjustable resistor divi
 5. Repeat for DVDD_3V with R4: target **3.30V +/-15mV**
 6. Verify DVDD_1V8 (TPS7A2018, fixed -- no adjustment needed)
 7. Verify the 2.5V reference (ADR4525CRZ): **2.500V +/-5mV**
+8. Disable the bench supply before connecting USB or a DUT.
 
 :::warning USB Latch-Up Risk
-Always plug in USB **before** enabling the bench supply. Hotplugging USB while the board is powered may forward-bias ESD diodes onto the STM32 3.3V IO pins and cause SCR latch-up. At least one latch-up event has occurred requiring days unpowered to recover.
+During normal USB-controlled operation, connect USB **before** enabling the
+bench supply. Hotplugging USB while the board is powered may forward-bias ESD diodes onto the STM32 3.3V IO pins and cause SCR latch-up. At least one latch-up event has occurred requiring days unpowered to recover.
 
-**Power on:** plug USB first, then enable bench supply.
-**Power off:** disable bench supply first, then unplug USB.
+**Power on:** Plug in USB first, then enable the bench power supply.  
+**Power off:** Disable the bench power supply first, then unplug USB.
 :::
 
 ### Power Rails Summary
 
-| Rail | Net name | Regulator | Powers |
-|------|----------|-----------|--------|
-| 5V digital | DVDD_5V | LM1086 U1 | DAC logic, NI DAQ edge connector |
-| 5V analog | AVDD_5V | DVDD_5V + ferrite L3 | DAC analog outputs |
-| 3.3V digital | DVDD_3V | LM1086 U2 | STM32, ADC digital, level translators |
-| 3.3V analog | AVDD_3V | DVDD_3V + ferrite L2 | ADC analog front end |
-| 1.8V | DVDD_1V8 | TPS7A2018 U12 | Low-voltage logic |
-| 2.5V REF | -- | ADR4525CRZ | DAC reference, TIA reference |
+| Rail | Net name | Source | Powers |
+|------|----------|--------|--------|
+| 5 V digital | `DVDD_5V` | LM1086 U1 | DAC digital and NI DAQ interface |
+| 5 V analog | `AVDD_5V` | `DVDD_5V` through ferrite bead L3 | DAC/TIAs/buffers/ADC analog supplies |
+| 3.3 V digital | `DVDD_3V` | LM1086 U2 | STM32 digital, ADC digital, and level translators |
+| 3.3 V analog | `AVDD_3V` | `DVDD_3V` through ferrite bead L2 | STM32 analog supply and ADR4525 reference supply|
+| 1.8 V digital | `DVDD_1V8` | TPS7A2018 U12 | Low-voltage digital interfaces |
+| 2.5 V reference | `REF` | ADR4525CRZ U18 | Reference for DACs and TIA |
 
 ---
 
@@ -76,17 +78,17 @@ Each has two jumper controls:
 
 | Jumper | DIR pin | Data flow | Effect |
 |--------|---------|-----------|--------|
-| JP9 populated | HIGH (VCCA) | B to A | NI DAQ drives DUT |
-| JP9 removed | LOW (GND) | A to B | NI DAQ reads DUT |
+| JP9 populated | HIGH (`VCCA`) | A → B | NI DAQ reads DUT |
+| JP9 removed | LOW (`GND`) | B → A | NI DAQ drives DUT |
 
 **Direction -- STM32 translator (JP33, DIR pin referenced to VCCA):**
 
 | Jumper | DIR pin | Data flow | Effect |
 |--------|---------|-----------|--------|
-| JP33 populated | HIGH (VCCA) | B to A | STM32 drives DUT |
-| JP33 removed | LOW (GND) | A to B | STM32 reads DUT |
+| JP33 populated | HIGH (`VCCA`) | A → B | STM32 reads DUT |
+| JP33 removed | LOW (`GND`) | B → A | STM32 drives DUT |
 
-**Voltage -- Side B (DUT-facing):**
+**Voltage -- Side A (DUT-facing):**
 
 | Jumper | DUT-side voltage |
 |--------|-----------------|
@@ -94,7 +96,7 @@ Each has two jumper controls:
 | JP_VB = 3.3 | 3.3V |
 | JP_VB = 5.0 | 5.0V |
 
-NI DAQ DIO connects to the B side at 5V TTL. STM32 DIO0-7 connects to the A side at 3.3V.
+NI DAQ DIO runs on 5V. STM32 DIO runs on 3.3V.
 
 ---
 
@@ -134,4 +136,5 @@ The STM32 firmware is loaded via SWD using an STLINK-V3MINIE debugger.
 | 5 | NRST |
 | 6 | GND |
 
-Connect the STLINK before powering the board. After flashing, the STM32 enumerates as USB CDC on COM4 (VID 0x0483, PID 0x5740).
+Connect the STLINK before powering the board. After flashing, the STM32 enumerates as a USB CDC virtual COM port
+(for example, `COM4`; VID `0x0483`, PID `0x5740`).

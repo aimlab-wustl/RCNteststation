@@ -8,32 +8,68 @@ const capabilities = [
   {
     label: 'Bias generation',
     spec: '40 ch · 16-bit · 0–5 V',
-    detail: '5× DAC80508 daisy chain, per-channel RC filters on DAC4/5',
+    detail: (
+      <>
+        5× DAC80508 daisy chain
+        <br />
+        Per-channel RC filters on DAC4/5
+      </>
+    ),
   },
   {
     label: 'Voltage measurement',
     spec: '8 ch diff · 24-bit',
-    detail: '2× ADS131A04, SPI2 DMA, live stream to PC at 62.5 kSPS',
+    detail: (
+      <>
+        2× ADS131A04, SPI2 DMA
+        <br />
+        Live stream to PC at 62.5 kSPS
+      </>
+    ),
   },
   {
     label: 'Current measurement',
-    spec: '2 circuits · 2 kΩ – 2 MΩ',
-    detail: 'OPA3S328 TIA, switchable gain, calibrated against Keithley 2450',
+    spec: '2 circuits · 2 kΩ–2 MΩ',
+    detail: (
+      <>
+        OPA3S328 TIA, switchable gain
+        <br />
+        Calibrated against Keithley 2450
+      </>
+    ),
   },
   {
     label: 'Transient capture',
-    spec: 'up to 3.2 MSPS · 8000 samples',
-    detail: 'STM32 internal ADC, TIM1/DMA burst, binary USB transfer',
+    spec: 'Up to 3.2 MSPS · 8,000 samples',
+    detail: (
+      <>
+        STM32 internal ADC, TIM1/DMA burst
+        <br />
+        Binary USB transfer
+      </>
+    ),
   },
   {
     label: 'Digital I/O',
-    spec: '32 lines · 1.8 / 3.3 / 5 V',
-    detail: 'NI USB-6212 + STM32 GPIO, SN74LVC8T245 level translation',
+    spec: '22 lines · 16 translated',
+    detail: (
+      <>
+        16 lines selectable at 1.8 / 3.3 / 5 V
+        <br />
+        6 direct STM32 lines at 3.3 V
+      </>
+    ),
   },
   {
     label: 'Trigger & timing',
-    spec: 'PFI0–15 · 80 MHz counter',
-    detail: 'Hardware counter output to 10 MHz, synchronized AI acquisition',
+    spec: '10 MHz tested · PFI0–15',
+    detail: (
+      <>
+        80 MHz internal counter timebase
+        <br />
+        Synchronized AI acquisition
+      </>
+    ),
   },
 ];
 
@@ -41,7 +77,7 @@ const measurements = [
   { name: 'MOSFET', items: ['Transfer curve (Id–Vgs)', 'Output characteristics (Id–Vds)', 'Threshold voltage Vth', 'Transconductance gm', 'Body diode Vf'], status: 'done' },
   { name: 'Op-amp DC', items: ['Gain & linearity (INL)', 'Offset voltage Vos', 'Output swing', 'CMR', 'DC PSRR', 'Input bias current Ib'], status: 'done' },
   { name: 'Transient', items: ['Step response', 'Slew rate', 'Overshoot & settling'], status: 'done' },
-  { name: 'AC / noise', items: ['Bode plot (gain + phase)', 'Input-referred noise PSD', 'AC PSRR & CMRR'], status: 'planned' },
+  { name: 'AC / noise', items: ['Bode plot (gain + phase)', 'Input-referred noise PSD', 'AC PSRR & CMRR'], status: 'In progress' },
 ];
 
 export default function Home() {
@@ -56,12 +92,13 @@ export default function Home() {
           <div className={styles.heroInner}>
             <p className={styles.eyebrow}>AIMLAB · WashU</p>
             <h1 className={styles.heroTitle}>
-              Automated analog<br />IC test station
+              Automated Analog<br />IC Test Station
             </h1>
             <p className={styles.heroSub}>
-              A Python-controlled precision measurement platform for characterizing
-              tape-out ICs — MOSFETs, op-amps, and beyond. Full sweeps, structured
-              data, and publication-ready plots with no manual intervention.
+              An automated precision measurement platform for post-tapeout
+              characterization of analog ICs—including MOSFETs, op-amps, and beyond.
+              Generate complete sweeps, structured datasets, and publication-ready
+              plots through a unified Python interface.
             </p>
             <div className={styles.heroCtas}>
               <Link className={styles.ctaPrimary} to="/docs/intro">
@@ -121,7 +158,7 @@ export default function Home() {
                   <div className={styles.measHeader}>
                     <span className={styles.measName}>{m.name}</span>
                     <span className={m.status === 'done' ? styles.badgeDone : styles.badgePlanned}>
-                      {m.status === 'done' ? 'Implemented' : 'Planned'}
+                      {m.status === 'done' ? 'Implemented' : 'In progress'}
                     </span>
                   </div>
                   <ul className={styles.measList}>
@@ -140,19 +177,33 @@ export default function Home() {
           <div className={styles.sectionInner}>
             <h2 className={styles.sectionTitle}>Two control paths, one hardware platform</h2>
             <div className={styles.pathGrid}>
-              <div className={styles.pathCard}>
-                <p className={styles.pathName}>NI USB-6212</p>
-                <p className={styles.pathSub}>16 AI · 2 AO · 32 DIO · 16 PFI</p>
-                <p className={styles.pathDesc}>400 kS/s analog input with hardware-clocked acquisition. AI0–3 buffered with OPA4388. PFI counter output to 10 MHz. Software-timed DIO at ~1 kHz.</p>
-              </div>
-              <div className={styles.pathDivider}>
-                <span>selectable by jumper</span>
-              </div>
-              <div className={styles.pathCard}>
-                <p className={styles.pathName}>STM32H743</p>
-                <p className={styles.pathSub}>480 MHz · USB CDC · SPI2 DMA</p>
-                <p className={styles.pathDesc}>Drives DAC, reads ADS131A04 with DMA, controls TIA gain. Internal ADC burst capture to 3.2 MSPS for transient measurements. Python control over USB CDC.</p>
-              </div>
+            <div className={styles.pathCard}>
+              <p className={styles.pathName}>NI USB-6212</p>
+              <p className={styles.pathSub}>16 AI · 2 AO · 8 DIO · 16 PFI</p>
+              <p className={styles.pathDesc}>
+                400 kS/s hardware-timed analog acquisition
+                <br />
+                GPIO-based control of the DAC chain
+                <br />
+                10 MHz counter output tested on PFI
+              </p>
+            </div>
+
+            <div className={styles.pathDivider}>
+              <span>selectable by jumper</span>
+            </div>
+
+            <div className={styles.pathCard}>
+              <p className={styles.pathName}>STM32H743</p>
+              <p className={styles.pathSub}>480 MHz · USB CDC · SPI2 DMA</p>
+              <p className={styles.pathDesc}>
+                GPIO-based control of the DAC chain
+                <br />
+                ADS131A04 acquisition using SPI2 DMA
+                <br />
+                Internal ADC capture up to 3.2 MSPS
+              </p>
+            </div>
             </div>
           </div>
         </section>

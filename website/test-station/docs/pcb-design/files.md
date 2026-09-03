@@ -4,41 +4,31 @@ title: Design Files
 sidebar_position: 3
 ---
 
-# Design Files
+# PCB Design Files
 
-## Downloads
+## Available Files
 
-:::note
-Files will be available here once the V3 design is finalised. 
-:::
+The repository contains the editable Altium Designer source files and the
+V3 fabrication packages for both boards.
 
-| File | Format | Description |
-|------|--------|-------------|
-| AIMLAB_V3.zip | Altium Designer | Full schematic + PCB layout project |
-| AIMLAB_V3_Gerbers.zip | Gerber / Excellon | Fabrication files (JLCPCB ready) |
-| AIMLAB_V3_BOM.xlsx | Excel | Bill of materials with Mouser/DigiKey part numbers |
-| AIMLAB_V3_Schematic.pdf | PDF | Schematic for reference (no Altium needed) |
+| Resource | Location | Description |
+|----------|----------|-------------|
+| V3 Altium project | [`pcb/altium/AIMLAB_TESTSTATION_V3`](https://github.com/aimlab-wustl/RCNteststation/tree/main/pcb/altium/AIMLAB_TESTSTATION_V3) | Motherboard and daughterboard schematics, PCB layouts, project files, and output jobs |
+| Motherboard V3 Gerbers | [`MotherBoardGerberV3.zip`](https://github.com/aimlab-wustl/RCNteststation/blob/main/pcb/fabrication/MotherBoardGerberV3.zip) | Motherboard Gerber and drill files |
+| Daughterboard V3 Gerbers | [`DaughterBoardGerberV3.zip`](https://github.com/aimlab-wustl/RCNteststation/blob/main/pcb/fabrication/DaughterBoardGerberV3.zip) | Daughterboard Gerber and drill files |
 
-*Download buttons — to be added once files are uploaded to the repo*
+## Repository Structure
 
-## Design Notes
-
-- Designed in **Altium Designer**
-- Fabricated at **JLCPCB** (4-layer, 1.6mm FR4)
-- All Gerbers are pre-panelised and tested
-- BOM includes approved alternates for all critical components
-
-## Repository
-
-The full design files are hosted in the GitHub repository under `/hardware/`:
-
+```text
+pcb/
+├── altium/
+│   └── AIMLAB_TESTSTATION_V3/
+│       ├── Altium project files
+│       ├── Motherboard schematic and PCB layout
+│       ├── Daughterboard schematic and PCB layout
+│       ├── Job-Mother.OutJob
+│       └── Job-Daughter.OutJob
+└── fabrication/
+    ├── MotherBoardGerberV3.zip
+    └── DaughterBoardGerberV3.zip
 ```
-Automated-Analog-IC-Test-Station/
-└── hardware/
-    ├── altium/          ← Altium project files
-    ├── gerbers/         ← Fabrication files
-    ├── bom/             ← Bill of materials
-    └── schematic.pdf    ← PDF schematic
-```
-
-[View on GitHub →](https://github.com/kaiyuank/Automated-Analog-IC-Test-Station/tree/main/hardware)

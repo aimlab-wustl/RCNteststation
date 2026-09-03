@@ -13,9 +13,10 @@ These serve two distinct roles: slow single-sample reads for monitoring on-board
 via USB CDC, and high-speed burst capture for step response and transient measurements.
 
 For step response capture, ADC1 on PA1 is triggered by TIM1/TRGO2 with DMA2_Stream0,
-allowing burst captures from ~3.6 kSPS up to 3.2 MSPS into a 8000-sample SRAM buffer.
-The binary transfer protocol sends all captured data to the PC in approximately 100ms,
-over 100x faster than the equivalent ASCII transfer.
+allowing burst captures from 10 kSPS up to 3.2 MSPS into a 8000-sample SRAM buffer.
+The binary transfer protocol reduces transfer time substantially compared with
+ASCII formatting. A 1,000-sample capture completes in approximately 100 ms
+round trip.
 
 ## Pin Mapping
 
@@ -33,9 +34,9 @@ over 100x faster than the equivalent ASCII transfer.
 | Resolution | 16-bit |
 | Input range | 0-3.3V |
 | Slow read rate (via CDC) | ~1 kSPS (USB-limited) |
-| Fast burst rate (PA1 only) | 3.6 kSPS to 3.2 MSPS (TIM1/DMA) |
+| Fast burst rate (PA1 only) | 10 kSPS to 3.2 MSPS (TIM1/DMA) |
 | Max burst samples | 8000 per capture |
-| Fast transfer | Binary CDC (~100ms for 8000 samples) |
+| Fast transfer | Approximately 100 ms round trip for 1,000 samples |
 | Trigger source | TIM1/TRGO2 (hardware, no CPU involvement) |
 | DMA | DMA2_Stream0 -> non-cacheable SRAM buffer |
 
@@ -54,8 +55,7 @@ payload to the PC.
 
 ### SRAM3 Buffer Allocation
 
-All DMA buffers on the STM32H743 must reside in non-cacheable SRAM to avoid cache
-coherency issues. The relevant region is SRAM3 (D2 domain, 32 KB total at 0x30000000).
+In the current firmware, DMA buffers are placed in SRAM3 (D2 domain, 32 KB total at `0x30040000`), which is configured as non-cacheable to avoid cache-coherency problems.
 
 | Buffer | Size | Notes |
 |--------|------|-------|
@@ -67,7 +67,7 @@ coherency issues. The relevant region is SRAM3 (D2 domain, 32 KB total at 0x3000
 | **Headroom remaining** | **~6.8 KB** | |
 
 For much larger captures, the buffer can be relocated to **AXI SRAM** (512 KB, D1 domain at
-0x24000000), which is also accessible by DMA2. This would allow up to **262,144 samples**
+`0x24000000`), which is also accessible by DMA2. This would allow up to **262,144 samples**
 (~512 KB at uint16), giving 262 ms at 1 MSPS or 82 ms at 3.2 MSPS -- sufficient to capture
 multi-cycle transients and long settling tails.
 

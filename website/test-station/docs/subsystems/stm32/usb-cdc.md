@@ -8,8 +8,7 @@ sidebar_position: 3
 
 ## Overview
 
-The STM32H743 enumerates as a USB CDC virtual COM port. All Python control goes
-through ASCII command strings sent over this interface, with responses prefixed
+The STM32H743 enumerates as a USB CDC virtual COM port. All STM32-side Python control uses command strings sent over this interface, with responses prefixed
 `OK:`, `ERR:`, or `DATA:`. For large captures, binary payloads are used instead
 of ASCII to avoid the 100x throughput penalty of text formatting.
 
@@ -19,7 +18,7 @@ of ASCII to avoid the 100x throughput penalty of text formatting.
 |-----------|-------|
 | VID | 0x0483 (STMicroelectronics) |
 | PID | 0x5740 |
-| COM port (Windows) | COM4 |
+| COM port (Windows) | Assigned dynamically, for example `COM4` |
 | USB clock | HSI48 (48 MHz) |
 | LPM | Disabled (USBD_LPM_ENABLED=0) |
 | Firmware version string | AIMLAB_TESTSTATION_V3_r1 |
@@ -60,7 +59,7 @@ All commands are ASCII strings terminated with `\n`. Responses are terminated wi
 For large captures, the firmware sends a binary payload instead of ASCII:
 
 ```
-host  -> ADCFAST_CAPTURE 1000 0 23
+host  -> ADCFAST_CAPTURE 1000 0 74
 board -> BINARY:2000
          <2000 bytes of raw uint16 data, little-endian>
          OK:ADCFAST_DONE n=1000
@@ -77,7 +76,7 @@ and `tia.py` all use it internally through a shared singleton port.
 ```python
 from hardware.cdc_serial import open_port, send_command, ping
 
-port = open_port()                    # open COM4, safe to call multiple times
+port = open_port()                    # opens the configured COM port
 resp = send_command("IDENTIFY")       # -> "OK:AIMLAB_TESTSTATION_V3_r1"
 alive = ping()                        # -> True if firmware responds correctly
 ```
@@ -87,5 +86,5 @@ alive = ping()                        # -> True if firmware responds correctly
 Hotplugging USB while the board is powered may forward-bias ESD diodes onto
 3.3V IO pins, causing SCR latch-up. Always follow this order:
 
-**Power on:** plug USB first, then enable bench supply.
-**Power off:** disable bench supply first, then unplug USB.
+**Power on:** Plug in USB first, then enable the bench power supply.  
+**Power off:** Disable the bench power supply first, then unplug USB.

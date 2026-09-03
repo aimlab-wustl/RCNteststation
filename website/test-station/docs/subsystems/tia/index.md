@@ -8,7 +8,13 @@ sidebar_position: 6
 
 ## Overview
 
-A single OPA3S328RGRR, containing two independent transimpedance amplifier circuits (Amp A and Amp B), is used for precision current measurement. The feedback resistance on each circuit is switchable via the chip's integrated analog switches controlled by STM32 GPIO, allowing current measurement across four decades without any manual hardware changes. Calibration against the Keithley 2450 SMU extracts the effective Rf for each range including switch RON, giving accurate current readings directly from the Python API.
+A single OPA3S328RGRR dual op amp is configured as two independent
+transimpedance amplifiers, Amp A and Amp B. The chip's integrated analog
+switches select the feedback resistance through STM32 GPIO, providing two
+current ranges on Amp A and three on Amp B without manual hardware changes. Calibration against
+the Keithley 2450 SMU extracts the effective feedback resistance and voltage
+offset for each range, including the resistance of the integrated
+switches.
 
 ## Schematic
 
@@ -20,10 +26,10 @@ A single OPA3S328RGRR, containing two independent transimpedance amplifier circu
 |-----------|-------|
 | Topology | Precision CMOS op-amp with integrated analog switches |
 | GBW | 40 MHz |
-| Input bias current | 1 pA typ |
-| Offset voltage | 60 uV typ |
+| Input bias current | ±0.2 pA typical |
+| Input offset voltage | 10 µV typical, ±60 µV maximum |
 | Output swing | Rail-to-rail |
-| Switch RON | ~84-125 Ohm (calibrated out in Python) |
+| Switch RON | 84 Ω typical, 125 Ω maximum at 5 V |
 | Package | VQFN-20 (RGRR) |
 
 ## Hardware Configuration
@@ -62,7 +68,11 @@ Amp A output (OUTA) is read differentially on ADS131A04 Chip 2 Channel 3, and Am
 
 ## Calibration
 
-Calibration uses the Keithley 2450 as a reference current source. Connect Keithley HI to -INB on the board and Keithley LO to board GND. The calibration sweeps 21 current points from -I_max to +I_max for each range, fits a linear model, and extracts the effective Rf and voltage offset:
+Calibration uses the Keithley 2450 as a reference current source. Connect Keithley HI
+to `−INB` on the board and Keithley LO to board `GND`. The calibration sweeps
+21 current points from `−Imax` to `+Imax` for each selected range, fits a
+linear model, and extracts the effective feedback resistance and voltage
+offset:
 
 ```
 I = -(V_ch4 - V_offset) / Rf_eff
@@ -119,9 +129,7 @@ The ADC rate is set per range: B_20K uses 5 kSPS (OSR_400) for wider measurement
 while B_200K and B_2M drop to 0.5 kSPS (OSR_4096) to maximise decimation filter averaging
 and reduce the noise floor for small current measurements.
 
-A ~12 nA baseline offset has been observed consistently with no device connected, confirmed
-via DMM cross-check to be an instrumentation artifact -- likely a combination of OPA3S328
-input bias current and ADS131 common-mode pickup on the differential input pair -- rather
-than real board leakage. Cross-check against DMM when measuring below ~15 nA.
-
-*Current accuracy plots vs Keithley reference -- to be added*
+An approximately 12 nA zero-input offset has been observed. Its source
+has not yet been isolated; possible contributors include board leakage,
+common-mode-to-differential conversion, and measurement-chain offset.
+Treat readings below approximately 15 nA cautiously.
