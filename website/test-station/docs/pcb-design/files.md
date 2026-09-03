@@ -14,8 +14,8 @@ V3 fabrication packages for both boards.
 | Resource | Location | Description |
 |----------|----------|-------------|
 | V3 Altium project | [`pcb/altium/AIMLAB_TESTSTATION_V3`](https://github.com/aimlab-wustl/RCNteststation/tree/main/pcb/altium/AIMLAB_TESTSTATION_V3) | Motherboard and daughterboard schematics, PCB layouts, project files, and output jobs |
-| Motherboard V3 Gerbers | [`MotherBoardGerberV3.zip`](https://github.com/aimlab-wustl/RCNteststation/blob/main/pcb/fabrication/MotherBoardGerberV3.zip) | Motherboard Gerber and drill files |
-| Daughterboard V3 Gerbers | [`DaughterBoardGerberV3.zip`](https://github.com/aimlab-wustl/RCNteststation/blob/main/pcb/fabrication/DaughterBoardGerberV3.zip) | Daughterboard Gerber and drill files |
+| Motherboard V3 Gerbers | [`MotherBoardGerber.zip`](https://github.com/aimlab-wustl/RCNteststation/blob/main/pcb/fabrication/MotherBoardGerber.zip) | Motherboard Gerber and drill files |
+| Daughterboard V3 Gerbers | [`DaughterBoardGerber.zip`](https://github.com/aimlab-wustl/RCNteststation/blob/main/pcb/fabrication/DaughterBoardGerber.zip) | Daughterboard Gerber and drill files |
 
 ## Repository Structure
 
