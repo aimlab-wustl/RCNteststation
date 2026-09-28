@@ -1,24 +1,38 @@
-"""
-hardware/stm_adc_fast.py
-=========================
-Python control for the ADCFAST_CAPTURE firmware command (TIM1/TRGO2 +
-DMA2_Stream0 + ADC1/PA1 burst capture -- see adc_capture.c/.h).
-
-Uses the same CDC serial singleton as ads131a04.py/tia.py -- safe to
-call alongside those, no separate port needed.
-
-Protocol (binary transfer -- NOT the original 20-line ASCII CSV
-version, which measured ~10.2s round trip for 1000 samples, over
-100x slower than the ~100ms capture itself):
-    host  -> ADCFAST_CAPTURE n_samples prescaler period
-    board -> BINARY:<n_bytes>          (text line)
-             <n_bytes of raw data>      (binary, NOT line-based)
-             OK:ADCFAST_DONE n=<n>      (text line)
-    or      ERR:...                    (text line, on failure)
-
-Raw codes are 16-bit, single-ended, 0..65535 over 0..3.3V -- same
-convention as ADC_ReadVoltage() in dio.c/.h.
-"""
+# Project: Automated Analog and Neuromorphic Integrated Circuits Test Station
+# Author: Kaiyuan (Sam) Kang
+#
+# Licensing Terms: This program is licensed under the Creative Commons
+# Attribution-NonCommercial 4.0 International License (CC BY-NC 4.0).
+# You are free to share and adapt this program for noncommercial purposes,
+# provided that appropriate credit is given, a link to the license is provided,
+# and any modifications are indicated. Commercial use requires a separate
+# license from the copyright holder. See the LICENSE file for the complete
+# license terms.
+#
+# NO WARRANTY: BECAUSE THE PROGRAM IS LICENSED FREE OF CHARGE, THERE IS NO
+# WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE LAW.
+# EXCEPT WHEN OTHERWISE STATED IN WRITING, THE COPYRIGHT HOLDERS AND/OR
+# OTHER PARTIES PROVIDE THE PROGRAM "AS IS" WITHOUT WARRANTY OF ANY KIND,
+# EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE
+# ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU.
+# SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY
+# SERVICING, REPAIR, OR CORRECTION. IN NO EVENT, UNLESS REQUIRED BY
+# APPLICABLE LAW OR AGREED TO IN WRITING, WILL ANY COPYRIGHT HOLDER OR ANY
+# OTHER PARTY WHO MAY MODIFY AND/OR REDISTRIBUTE THE PROGRAM BE LIABLE TO
+# YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL, OR
+# CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE THE
+# PROGRAM (INCLUDING, BUT NOT LIMITED TO, LOSS OF DATA, DATA BEING
+# RENDERED INACCURATE, LOSSES SUSTAINED BY YOU OR THIRD PARTIES, OR A
+# FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS), EVEN IF SUCH
+# HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH
+# DAMAGES.
+#
+# ============================================================
+# hardware/stm_adc_fast.py
+# Python control for the ADCFAST_CAPTURE firmware command (TIM1/TRGO2 +
+# DMA2_Stream0 + ADC1/PA1 burst capture -- see adc_capture.c/.h).
+# ============================================================
 
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
