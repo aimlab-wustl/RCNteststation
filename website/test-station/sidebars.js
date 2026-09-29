@@ -1,3 +1,4 @@
+// @ts-check
 /*
  * Project: Automated Analog and Neuromorphic Integrated Circuits Test Station
  * Author: Kaiyuan (Sam) Kang
@@ -29,7 +30,6 @@
  * HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH
  * DAMAGES.
  */
-// @ts-check
 
 /** @type {import('@docusaurus/plugin-content-docs').SidebarsConfig} */
 const sidebars = {
@@ -74,8 +74,22 @@ const sidebars = {
             'subsystems/stm32/stm32-usb-cdc',
           ],
         },
-        'subsystems/dac/dac',
-        'subsystems/adc/adc',
+        {
+          type: 'category',
+          label: 'DAC',
+          items: [
+            'subsystems/dac/dac',
+            'subsystems/dac/characterization',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'ADC',
+          items: [
+            'subsystems/adc/adc',
+            'subsystems/adc/characterization',
+          ],
+        },
         'subsystems/tia/tia',
       ],
     },

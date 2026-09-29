@@ -16,7 +16,9 @@ For step response capture, ADC1 on PA1 is triggered by TIM1/TRGO2 with DMA2_Stre
 allowing burst captures from 10 kSPS up to 3.2 MSPS into a 8000-sample SRAM buffer.
 The binary transfer protocol reduces transfer time substantially compared with
 ASCII formatting. A 1,000-sample capture completes in approximately 100 ms
-round trip.
+round trip. Characterization confirms that this path trades precision for speed: it is
+best suited to MHz-rate transient measurements, while the ADS131A04 remains the preferred
+low-noise precision ADC.
 
 ## Pin Mapping
 
@@ -133,13 +135,28 @@ plt.show()
 
 ## Measured Performance
 
-Fast burst capture confirmed working from **10 kSPS to 3.2 MSPS** (PA1) with zero
-overrun errors. Binary transfer of 1000 samples takes approximately 100ms round trip,
-versus ~10s for the equivalent ASCII transfer -- over 100x improvement.
+Fast burst capture is confirmed from **10 kSPS to 3.2 MSPS** on PA1 with zero overrun
+errors. Binary transfer of 1000 samples takes approximately **100 ms** round trip,
+compared with roughly 10 s for the equivalent ASCII transfer.
 
-The plot below shows a step response capture on PA1 at 3.2 MSPS (1 sample per ~312 ns).
-STM GPIO output steps at t=0 (red dashed line). The initial overshoot and multi-stage
-settling are clearly resolved -- the output reaches its first plateau around 10 us and
-final steady state around 50 us. 
+Static characterization with a shorted input and an approximately 2.5 V reference shows
+the intended speed-versus-precision role of the STM32 ADC:
+
+| Sample rate | ZERO noise | 2.5 V signal noise | 1–200 Hz noise | Two-point DC error* |
+|------------:|-----------:|--------------------:|---------------:|--------------------:|
+| 10 kS/s | 252.90 µV RMS | 420.70 µV RMS | 83.39 µV RMS | -884 ppm |
+| 100 kS/s | 247.79 µV RMS | 435.39 µV RMS | 31.11 µV RMS | -928 ppm |
+| 1 MS/s | 279.39 µV RMS | 429.39 µV RMS | 16.33 µV RMS | -596 ppm |
+| 3.2 MS/s | 248.52 µV RMS | 428.29 µV RMS | 10.77 µV RMS | -849 ppm |
+
+The native signal noise remains approximately **0.42–0.44 mV RMS** across the tested
+rates. This is higher than the ADS131A04 precision ADC, but the STM32 path provides much
+higher sample rate and is intended primarily for **transient capture, settling-time
+measurements, slew-rate measurements, and switching events**.
+
+The plot below shows a step-response capture on PA1 at **3.2 MSPS**
+(approximately 312 ns per sample). The initial overshoot and multi-stage settling are
+clearly resolved, demonstrating the role of this path as the test station's fastest
+onboard transient digitizer.
 
 ![Fast ADC step response capture at 3.2 MSPS](../../../static/img/FastMHzadc.png)

@@ -12,6 +12,9 @@ The USB-6212 provides 16 analog input channels (AI0-AI15), 16-bit, up to 400 kS/
 AI0-AI3 are buffered on the motherboard with a unity-gain OPA4388IDR before reaching
 the DAQ connector. AI4-AI15 connect directly to the edge connector without buffering.
 Channels can be configured as 16 single-ended or 8 differential in software.
+Both the buffered and direct input paths were characterized up to 400 kS/s. The direct
+inputs showed slightly lower measured noise, while AI0-AI3 provide the OPA4388 buffer
+when source isolation or buffering is useful.
 
 ## Key Specifications (USB-6212 AI)
 
@@ -95,6 +98,32 @@ AI_DEFAULT_SAMPLES = 4_000
 
 ## Measured Performance
 
-Single-channel acquisition confirmed at **400 kS/s** with live streaming and CSV
-recording. `read_continuous()` uses a hardware-clocked callback -- no samples are
-dropped between chunks at full rate.
+Single-channel acquisition is confirmed from **1 kS/s to 400 kS/s** with live streaming
+and CSV recording. `read_continuous()` uses hardware-clocked acquisition, allowing
+continuous operation at the full 400 kS/s single-channel rate.
+
+The characterization compared a representative **OPA4388-buffered input** with a
+**direct USB-6212 input** using shorted-input and approximately 2.5 V reference
+measurements.
+
+![NI USB-6212 buffered versus direct input noise](../../../static/img/adc/07_ni_buffered_vs_direct.png)
+
+| Rate | Buffered signal noise | Direct signal noise | Buffered 1–200 Hz noise | Direct 1–200 Hz noise |
+|-----:|----------------------:|--------------------:|-----------------------:|---------------------:|
+| 1 kS/s | 189.42 µV RMS | 191.15 µV RMS | 125.86 µV RMS | 124.95 µV RMS |
+| 10 kS/s | 185.19 µV RMS | 177.83 µV RMS | 58.62 µV RMS | 55.84 µV RMS |
+| 100 kS/s | 185.74 µV RMS | 177.62 µV RMS | 49.16 µV RMS | 46.11 µV RMS |
+| 400 kS/s | 185.66 µV RMS | 178.29 µV RMS | 48.26 µV RMS | 45.11 µV RMS |
+
+At **400 kS/s**, the direct input measured approximately **178 µV RMS** signal noise,
+while the buffered input measured approximately **186 µV RMS**. The direct path is
+therefore slightly quieter in the tested configuration, while both retain the full
+high-rate acquisition capability.
+
+Two-point DC accuracy at approximately 2.5 V was also good for both configurations:
+approximately **-100 ppm** for the direct input and **-88 ppm** for the representative
+buffered input at 400 kS/s.
+
+For general high-rate acquisition where the source can directly drive the USB-6212,
+**AI4-AI15** provide the native bipolar input range and slightly lower measured noise.
+**AI0-AI3** provide the OPA4388 buffer when buffering or source isolation is useful.

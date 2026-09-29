@@ -1,3 +1,4 @@
+// @ts-check
 /*
  * Project: Automated Analog and Neuromorphic Integrated Circuits Test Station
  * Author: Kaiyuan (Sam) Kang
@@ -29,7 +30,6 @@
  * HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH
  * DAMAGES.
  */
-// @ts-check
 import {themes as prismThemes} from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */

@@ -19,7 +19,9 @@ continuous DMA streaming captures four simultaneous channels from one chip.
 
 With the current clock configuration, the highest tested streaming rate is
 62.5 kSPS per channel at OSR32. Offset calibration is available for all eight
-channels to remove residual system offsets.
+channels to remove residual system offsets. For low-noise voltage measurement,
+the characterized default is **OSR256 / 7.8125 kSPS** with the **OPA4388 enabled**
+and a **100 Ω + 10 nF RC input filter**.
 
 ## Schematic
 
@@ -38,6 +40,7 @@ channels to remove residual system offsets.
 | Max reliable data rate | 62.5 kSPS (OSR_32, DMA streaming) |
 | MCLK | 8 MHz (STM32 MCO1, PA8) |
 | Interface | SPI2 + DMA1 Stream3 |
+| Recommended precision front end | OPA4388 enabled, 100 Ω + 10 nF RC filter |
 
 ### Data Rate Options
 
@@ -51,6 +54,27 @@ The following rates use the current 2 MHz modulator clock:
 | 256 | 7.8125 kSPS | Default voltage acquisition |
 | 128 | 15.625 kSPS | Higher-bandwidth acquisition |
 | 32 | 62.500 kSPS | Highest tested DMA rate |
+
+### Noise versus OSR
+
+The measured ADS131A04 noise follows the expected oversampling tradeoff:
+higher OSR reduces the converter noise floor while lowering the available
+output data rate.
+
+![ADS131A04 OSR noise tradeoff](../../../static/img/adc/ads_osr_tradeoff.png)
+
+| OSR | Project data rate | Measured median shorted-input noise | TI typical |
+|-----|------------------:|-----------------------------------:|-----------:|
+| 4096 | 488.281 S/s | 1.85 µV RMS | 1.66 µV RMS |
+| 256 | 7.8125 kS/s | 7.15 µV RMS | 7.02 µV RMS |
+| 128 | 15.625 kS/s | 11.47 µV RMS | 12.72 µV RMS |
+| 32 | 62.5 kS/s | 154.83 µV RMS | 156.92 µV RMS |
+
+The close agreement with the datasheet trend indicates that the precision ADC
+path is operating near the expected converter noise floor. **OSR256** is used
+as the default precision setting because it retains several-kilohertz output
+bandwidth while keeping the measured shorted-input noise near **7 µV RMS**.
+OSR4096 is preferred when minimum noise is more important than bandwidth.
 
 ## Hardware Configuration
 
@@ -70,16 +94,22 @@ The following rates use the current 2 MHz modulator clock:
 
 ### Signal Conditioning
 
-Each differential input pair includes an optional external OPA4388
-unity-gain buffer followed by an RC anti-aliasing filter. The OPA4388 is
-located on the motherboard and is not integrated into the ADS131A04.
+Each differential input pair includes an optional external OPA4388 unity-gain
+buffer followed by an RC anti-aliasing filter.
 
 For the quad OPA4388, the input offset voltage is ±2.25 µV typical and
-±8 µV maximum at a 5.5 V supply. Its zero-drift architecture provides
-stable low-frequency performance and very low 1/f noise. The buffer can be
-bypassed using a solder jumper: enable it for high-impedance sources and
-bypass it when the source impedance is sufficiently low. See the schematic
-for the RC-filter cutoff frequency.
+±8 µV maximum at a 5.5 V supply. Its zero-drift architecture provides stable
+low-frequency performance and very low 1/f noise. The buffer can be bypassed
+using a solder jumper when a direct input path is desired.
+
+For general precision measurements, characterization showed the best overall
+result with the **OPA4388 enabled and a 100 Ω + 10 nF RC filter**. At OSR256
+(7.8125 kSPS), the 10 nF configuration averaged approximately **7.09 µV RMS**
+shorted-input noise, **12.87 µV RMS** while measuring the 2.5 V reference, and
+**4.91 µV RMS** integrated over 1–200 Hz. The 10 nF and 1 nF filter comparison
+was performed with the buffer enabled, while the 4.7 nF configuration was used
+to compare buffered and buffer-bypassed operation. See
+[ADC Characterization](./characterization) for the full comparison.
 
 ### DMA Streaming
 
@@ -136,7 +166,7 @@ v, t = adc.read_dma(chip=1, num_frames=50000, duration=30.0,
 
 # -- Continuous live plot (runs until window closed or duration reached) --
 v, t = adc.read_continuous(chip=1, ch=1, duration=None,
-                            window_sec=5.0, csv_filename="live.csv")
+                           window_sec=5.0, csv_filename="live.csv")
 
 # -- Diagnostics --
 adc.selftest()                 # read status registers + one frame per chip
@@ -145,12 +175,30 @@ adc.status(chip=1)             # returns {'ID': '0x04', 'STAT': '0x00', ...}
 
 ## Measured Performance
 
-DMA streaming runs stably at **62.5 kSPS** (OSR_32) with zero overrun errors. Default sessions use **8.0 kSPS** (OSR_256) for a good balance of noise and throughput.
+For normal precision acquisition, **OSR256 / 7.8125 kSPS** with the recommended
+**OPA4388-buffered 100 Ω + 10 nF** front end provides the best overall balance of
+noise and throughput. At this setting, the 10 nF configuration measured about
+**7.1 µV RMS** shorted-input noise, **12.9 µV RMS** while measuring the 2.5 V
+reference, and **4.9 µV RMS** integrated over 1–200 Hz.
 
-**5 kHz sine at 62.5 kSPS** -- clean reconstruction with ~12 samples per cycle over a 5ms window. A single dropped DMA frame is visible over a 30-second recording, expected at near-maximum rate.
+For lower-bandwidth measurements, OSR4096 reduces the shorted-input noise to
+about **1.85 µV RMS**. For higher bandwidth, OSR128 and OSR32 increase the output
+rate to 15.625 kSPS and 62.5 kSPS respectively, with the expected increase in
+converter noise.
+
+Detailed filter, buffer, DC-accuracy, and cross-system comparisons are provided
+on the [ADC Characterization](./characterization) page.
+
+**5 kHz sine at 62.5 kSPS** -- clean reconstruction with ~12 samples per cycle over a 5ms window.
 
 ![5kHz sine at 62.5kSPS](../../../static/img/ADS131_5kSin.png)
 
-**10 mVpp signal at ~8 kSPS** -- 10 mVpp signal (10,000 uV peak-to-peak) resolved clearly above the noise floor, with smooth consistent waveform shape across a 0.4s window.
+**10 mVpp signal at ~8 kSPS** -- 10 mVpp signal resolved clearly above the noise floor, with smooth consistent waveform shape across a 0.4s window.
 
 ![10mVpp at 8kSPS](../../../static/img/ADS131a04_10mVpp.png)
+
+### Detailed Characterization
+
+Noise versus OSR, datasheet agreement, RC-filter selection, buffered versus
+buffer-bypassed operation, and DC-accuracy measurements are documented on the
+**[ADC Characterization](./characterization)** page.

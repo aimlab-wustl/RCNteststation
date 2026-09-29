@@ -41,3 +41,24 @@ website/test-station/build/
 # OS
 .DS_Store
 Thumbs.db
+
+# Local editor and Python environments
+.vscode/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+
+# Hardware-specific calibration
+python/tia_cal.json
+python/cal_ads131.json
+
+# Generated measurement outputs
+python/MosTesting/test*_raw_*.csv
+python/MosTesting/test*_summary_*.json
+python/MosTesting/test*_final_*.png
+python/OPATesting/*.csv
+python/OPATesting/*.json
+python/OPATesting/*.png
+python/OPATesting/*.npz
+python/OPATesting/*.mat
