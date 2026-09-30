@@ -53,11 +53,12 @@ The Python control scripts are located in the repository:
 
 ### Quick Setup
 
-Create the environment and install dependencies:
+From the repository root, create the environment and install the Python dependencies:
 
 ```bash
 conda create -n test-station python=3.13
 conda activate test-station
+cd python
 pip install -r requirements.txt
 ```
 
@@ -136,7 +137,8 @@ print(keithley.query('*IDN?'))
 
 ## 5. Verify Everything
 
-Run this quick check to confirm the main interfaces are working:
+From the `python/` directory, run this quick check to confirm the main
+interfaces are working:
 
 ```python
 # NI DAQ

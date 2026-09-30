@@ -26,7 +26,7 @@ The [DAC characterization](https://aimlab-wustl.github.io/RCNteststation/docs/su
 
 | Path | Contents |
 | --- | --- |
-| [`pcb/`](pcb/) | V3 Altium motherboard and daughterboard sources and fabrication files |
+| [`pcb/`](pcb/) | V3 motherboard schematic and PCB, daughterboard PCB, and fabrication packages |
 | [`firmware/`](firmware/) | STM32 firmware and required vendor libraries |
 | [`python/`](python/) | Hardware drivers and measurement scripts |
 | [`website/test-station/`](website/test-station/) | System documentation, schematics, and characterization figures |

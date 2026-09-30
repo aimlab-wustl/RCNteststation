@@ -32,245 +32,201 @@
 import React from 'react';
 import Link from '@docusaurus/Link';
 import Layout from '@theme/Layout';
-import styles from './index.module.css';
 import useBaseUrl from '@docusaurus/useBaseUrl';
+import styles from './index.module.css';
 
-const capabilities = [
+const highlights = [
+  {value: '40', label: 'programmable DAC outputs', detail: '16-bit · 0–5 V'},
+  {value: '8', label: 'differential ADC inputs', detail: '24-bit · two ADS131A04s'},
+  {value: '2', label: 'current measurement paths', detail: 'switchable TIA feedback'},
+  {value: '3.2', label: 'MSPS transient capture', detail: 'STM32 internal ADC'},
+];
+
+const layers = [
   {
-    label: 'Bias generation',
-    spec: '40 ch · 16-bit · 0–5 V',
-    detail: (
-      <>
-        5× DAC80508 daisy chain
-        <br />
-        Per-channel RC filters on DAC4/5
-      </>
-    ),
+    number: '01', title: 'Board',
+    text: 'A V3 motherboard connects programmable bias, voltage and current measurement, digital I/O, and a swappable DUT adapter.',
+    link: '/docs/pcb-design/pcb-overview', linkText: 'Explore the hardware',
   },
   {
-    label: 'Voltage measurement',
-    spec: '8 ch diff · 24-bit',
-    detail: (
-      <>
-        2× ADS131A04, SPI2 DMA
-        <br />
-        Live stream to PC at 62.5 kSPS
-      </>
-    ),
+    number: '02', title: 'Firmware',
+    text: 'The STM32 coordinates DAC control, precision ADC acquisition, and fast transient capture over USB CDC.',
+    link: '/docs/subsystems/stm32/', linkText: 'Explore the STM32',
   },
   {
-    label: 'Current measurement',
-    spec: '2 circuits · 2 kΩ–2 MΩ',
-    detail: (
-      <>
-        OPA3S328 TIA, switchable gain
-        <br />
-        Calibrated against Keithley 2450
-      </>
-    ),
-  },
-  {
-    label: 'Transient capture',
-    spec: 'Up to 3.2 MSPS · 8,000 samples',
-    detail: (
-      <>
-        STM32 internal ADC, TIM1/DMA burst
-        <br />
-        Binary USB transfer
-      </>
-    ),
-  },
-  {
-    label: 'Digital I/O',
-    spec: '22 lines · 16 translated',
-    detail: (
-      <>
-        16 lines selectable at 1.8 / 3.3 / 5 V
-        <br />
-        6 direct STM32 lines at 3.3 V
-      </>
-    ),
-  },
-  {
-    label: 'Trigger & timing',
-    spec: '10 MHz tested · PFI0–15',
-    detail: (
-      <>
-        80 MHz internal counter timebase
-        <br />
-        Synchronized AI acquisition
-      </>
-    ),
+    number: '03', title: 'Python',
+    text: 'Python drivers and test scripts set conditions, acquire data, and save repeatable measurements and plots.',
+    link: '/docs/getting-started/software-setup', linkText: 'Explore the software',
   },
 ];
 
-const measurements = [
-  { name: 'MOSFET', items: ['Transfer curve (Id–Vgs)', 'Output characteristics (Id–Vds)', 'Threshold voltage Vth', 'Transconductance gm', 'Body diode Vf'], status: 'done' },
-  { name: 'Op-amp DC', items: ['Gain & linearity (INL)', 'Offset voltage Vos', 'Output swing', 'CMR', 'DC PSRR', 'Input bias current Ib'], status: 'done' },
-  { name: 'Transient', items: ['Step response', 'Slew rate', 'Overshoot & settling'], status: 'done' },
-  { name: 'AC / noise', items: ['Bode plot (gain + phase)', 'Input-referred noise PSD', 'AC PSRR & CMRR'], status: 'In progress' },
+const results = [
+  {
+    type: 'DAC characterization', title: 'Programmable bias, measured',
+    text: 'Static accuracy, reference selection, control paths, and output filter noise across the DAC80508 chain.',
+    link: '/docs/subsystems/dac/characterization',
+  },
+  {
+    type: 'ADC characterization', title: 'Precision acquisition, measured',
+    text: 'Noise and sampling-rate tradeoffs, input filtering, and buffered versus unbuffered ADC inputs.',
+    link: '/docs/subsystems/adc/characterization',
+  },
+];
+
+const experiments = [
+  {name: 'MOSFET', detail: 'Transfer and output curves, threshold voltage, transconductance, and body diode.', link: '/docs/measurements/mosfet/mosfet-overview'},
+  {name: 'Op-amp', detail: 'DC gain, offset, common-mode range, PSRR, input bias, and step response.', link: '/docs/measurements/opamp/opamp-overview'},
 ];
 
 export default function Home() {
   const frontPhoto = useBaseUrl('/img/teststation_front.jpg');
   const backPhoto = useBaseUrl('/img/teststation_back.jpg');
-  return (
-    <Layout title="Home" description="Automated analog and neuromorphic integrated circuits test station">
-      <main className={styles.main}>
+  const diagram = useBaseUrl('/img/system-block-diagram.svg');
 
-        {/* ── Hero ── */}
+  return (
+    <Layout title="Home" description="A modular board, STM32 firmware, and Python control for repeatable analog and neuromorphic IC characterization">
+      <main className={styles.main}>
         <section className={styles.hero}>
           <div className={styles.heroInner}>
-            <p className={styles.eyebrow}>AIMLAB · WashU</p>
-            <h1 className={styles.heroTitle}>
-              Automated Analog and<br />Neuromorphic Integrated<br />Circuits Test-Station
-            </h1>
-            <p className={styles.heroSub}>
-              Post-tapeout IC testing often requires separate instruments and repeated
-              manual setup. This modular board, STM32 firmware, and Python control
-              system bring programmable biasing and precision measurements together
-              to make experiments easier to repeat across devices.
-            </p>
-            <div className={styles.heroCtas}>
-              <Link className={styles.ctaPrimary} to="/docs/intro">
-                Read the docs
-              </Link>
-              <Link className={styles.ctaSecondary} to="/docs/getting-started/hardware-setup">
-                Get started
-              </Link>
-              <a className={styles.ctaSecondary} href="https://github.com/aimlab-wustl/RCNteststation" target="_blank" rel="noopener noreferrer">
-                GitHub
-              </a>
+            <div className={styles.heroCopy}>
+              <p className={styles.eyebrow}>AIMLAB · Washington University in St. Louis</p>
+              <h1>Automated Analog and Neuromorphic Integrated Circuits Test-Station</h1>
+              <p className={styles.heroText}>
+                A modular test station for repeatable post-tapeout measurements.
+                The board, STM32 firmware, and Python software bring programmable
+                biasing, precise acquisition, and experiment control together.
+              </p>
+              <div className={styles.actions}>
+                <Link className={styles.primaryAction} to="/docs/intro">Explore the system</Link>
+                <Link className={styles.secondaryAction} to="/docs/measurements/measurements-overview">See measurements</Link>
+              </div>
+            </div>
+            <div className={styles.heroVisual} aria-label="V3 test station board views">
+              <img src={frontPhoto} alt="V3 test station board with DUT sockets" className={styles.heroPhoto} />
+              <img src={backPhoto} alt="V3 test station populated board and connections" className={styles.heroPhotoSecondary} />
+              <span className={styles.visualCaption}>V3 motherboard · front and back</span>
             </div>
           </div>
         </section>
 
-        {/* ── Photos ── */}
-        <section className={styles.photoSection}>
-          <div className={styles.photoGrid}>
-          <img
-            src={frontPhoto}
-            alt="Test station front view"
-            className={styles.photo}
-          />
-          <img
-            src={backPhoto}
-            alt="Test station back view"
-            className={styles.photo}
-          />
+        <section className={styles.highlights} aria-label="System capabilities">
+          <div className={styles.highlightGrid}>
+            {highlights.map((item) => (
+              <div className={styles.highlight} key={item.label}>
+                <strong>{item.value}</strong>
+                <span>{item.label}</span>
+                <small>{item.detail}</small>
+              </div>
+            ))}
           </div>
         </section>
 
-        {/* ── Capabilities grid ── */}
-        <section className={styles.section}>
-          <div className={styles.sectionInner}>
-            <h2 className={styles.sectionTitle}>Hardware capabilities</h2>
-            <div className={styles.capGrid}>
-              {capabilities.map((c) => (
-                <div key={c.label} className={styles.capCard}>
-                  <div className={styles.capTop}>
-                    <span className={styles.capLabel}>{c.label}</span>
-                    <span className={styles.capSpec}>{c.spec}</span>
-                  </div>
-                  <p className={styles.capDetail}>{c.detail}</p>
-                </div>
+        <section className={styles.section} id="architecture">
+          <div className={styles.container}>
+            <div className={styles.sectionHeading}>
+              <div>
+                <p className={styles.kicker}>System architecture</p>
+                <h2>One platform, two control paths</h2>
+              </div>
+              <p>
+                NI USB-6212 and STM32H743 control paths connect to the same DUT interface.
+                The diagram shows how bias, digital signals, precision acquisition, and
+                transient capture fit together.
+              </p>
+            </div>
+            <figure className={styles.diagramCard}>
+              <div className={styles.diagramScroll}>
+                <img src={diagram} alt="System block diagram showing host control, NI USB-6212 and STM32 paths, DAC bias, ADC and TIA measurement, and the DUT interface" />
+              </div>
+              <figcaption>
+                <span>V3 motherboard and DUT adapter signal paths</span>
+                <Link to="/docs/subsystems/subsystems-overview">Read the system overview →</Link>
+              </figcaption>
+            </figure>
+          </div>
+        </section>
+
+        <section className={styles.sectionAlt}>
+          <div className={styles.container}>
+            <div className={styles.sectionHeadingCompact}>
+              <p className={styles.kicker}>How it comes together</p>
+              <h2>Built around the board, firmware, and Python</h2>
+            </div>
+            <div className={styles.layerGrid}>
+              {layers.map((item) => (
+                <article className={styles.layerCard} key={item.title}>
+                  <span className={styles.layerNumber}>{item.number}</span>
+                  <h3>{item.title}</h3>
+                  <p>{item.text}</p>
+                  <Link to={item.link}>{item.linkText} →</Link>
+                </article>
               ))}
             </div>
           </div>
         </section>
 
-        {/* ── Measurements ── */}
         <section className={styles.section}>
-          <div className={styles.sectionInner}>
-            <h2 className={styles.sectionTitle}>Measurement pipelines</h2>
-            <div className={styles.measGrid}>
-              {measurements.map((m) => (
-                <div key={m.name} className={styles.measCard}>
-                  <div className={styles.measHeader}>
-                    <span className={styles.measName}>{m.name}</span>
-                    <span className={m.status === 'done' ? styles.badgeDone : styles.badgePlanned}>
-                      {m.status === 'done' ? 'Implemented' : 'In progress'}
-                    </span>
-                  </div>
-                  <ul className={styles.measList}>
-                    {m.items.map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
-                </div>
+          <div className={styles.container}>
+            <div className={styles.sectionHeading}>
+              <div>
+                <p className={styles.kicker}>Measured performance</p>
+                <h2>Explore the DAC and ADC results</h2>
+              </div>
+              <p>Board-level characterization documents the conditions, results, and limitations behind the headline specifications.</p>
+            </div>
+            <div className={styles.resultGrid}>
+              {results.map((item) => (
+                <Link className={styles.resultCard} to={item.link} key={item.type}>
+                  <span className={styles.resultType}>{item.type}</span>
+                  <h3>{item.title}</h3>
+                  <p>{item.text}</p>
+                  <span className={styles.cardArrow}>Read the results →</span>
+                </Link>
               ))}
             </div>
           </div>
         </section>
 
-        {/* ── Control paths ── */}
-        <section className={styles.section}>
-          <div className={styles.sectionInner}>
-            <h2 className={styles.sectionTitle}>Two control paths, one hardware platform</h2>
-            <div className={styles.pathGrid}>
-            <div className={styles.pathCard}>
-              <p className={styles.pathName}>NI USB-6212</p>
-              <p className={styles.pathSub}>16 AI · 2 AO · 8 DIO · 16 PFI</p>
-              <p className={styles.pathDesc}>
-                400 kS/s hardware-timed analog acquisition
-                <br />
-                GPIO-based control of the DAC chain
-                <br />
-                10 MHz counter output tested on PFI
-              </p>
+        <section className={styles.sectionAlt}>
+          <div className={styles.container}>
+            <div className={styles.sectionHeading}>
+              <div>
+                <p className={styles.kicker}>Experiment workflows</p>
+                <h2>From device connection to measurement</h2>
+              </div>
+              <p>Implemented MOSFET and op-amp routines use the same hardware and Python control stack. AC and noise workflows are in development.</p>
             </div>
-
-            <div className={styles.pathDivider}>
-              <span>selectable by jumper</span>
-            </div>
-
-            <div className={styles.pathCard}>
-              <p className={styles.pathName}>STM32H743</p>
-              <p className={styles.pathSub}>480 MHz · USB CDC · SPI2 DMA</p>
-              <p className={styles.pathDesc}>
-                GPIO-based control of the DAC chain
-                <br />
-                ADS131A04 acquisition using SPI2 DMA
-                <br />
-                Internal ADC capture up to 3.2 MSPS
-              </p>
-            </div>
+            <div className={styles.experimentGrid}>
+              {experiments.map((item) => (
+                <Link className={styles.experimentCard} to={item.link} key={item.name}>
+                  <h3>{item.name}</h3>
+                  <p>{item.detail}</p>
+                  <span>View measurements →</span>
+                </Link>
+              ))}
             </div>
           </div>
         </section>
 
-        {/* ── Footer CTA ── */}
-        <section className={styles.footerCta}>
-          <div className={styles.sectionInner}>
-            <h2 className={styles.footerCtaTitle}>Ready to characterize your chip?</h2>
-            <div className={styles.heroCtas}>
-              <Link className={styles.ctaPrimary} to="/docs/getting-started/hardware-setup">
-                Hardware setup
-              </Link>
-              <Link className={styles.ctaSecondary} to="/docs/measurements/measurements-overview">
-                View measurements
-              </Link>
+        <section className={styles.closing}>
+          <div className={styles.container}>
+            <h2>Start with the system</h2>
+            <p>See the hardware connections and software setup, then explore each subsystem and its measured performance.</p>
+            <div className={styles.actions}>
+              <Link className={styles.primaryAction} to="/docs/getting-started/hardware-setup">Hardware setup</Link>
+              <a className={styles.secondaryAction} href="https://github.com/aimlab-wustl/RCNteststation">View source on GitHub</a>
             </div>
           </div>
         </section>
 
         <section className={styles.projectCredits} aria-labelledby="project-credits-title">
-          <div className={styles.sectionInner}>
-            <h2 id="project-credits-title" className={styles.projectCreditsTitle}>Project credits</h2>
+          <div className={styles.container}>
+            <h2 id="project-credits-title">Project credits</h2>
             <p>Developed by Kaiyuan (Sam) Kang at AIMLAB, Washington University in St. Louis.</p>
-            <p>
-              This project is supported in part by a Research Coordination Network (RCN)
-              grant from the National Science Foundation (NSF), grant no. 2332166.
-            </p>
-            <p>
-              Original project materials are licensed under{' '}
-              <a href="https://github.com/aimlab-wustl/RCNteststation/blob/main/LICENSE">
-                CC BY-NC 4.0
-              </a>.
-            </p>
+            <p>Supported in part by a National Science Foundation Research Coordination Network grant (NSF 2332166).</p>
+            <p>Original project materials are licensed under <a href="https://github.com/aimlab-wustl/RCNteststation/blob/main/LICENSE">CC BY-NC 4.0</a>.</p>
           </div>
         </section>
-
       </main>
     </Layout>
   );

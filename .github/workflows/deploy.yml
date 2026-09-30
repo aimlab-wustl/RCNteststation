@@ -1,6 +1,11 @@
 name: Deploy Docusaurus to GitHub Pages
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'website/test-station/**'
+      - '.github/workflows/deploy.yml'
   workflow_dispatch:
 
 permissions:
