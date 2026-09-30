@@ -115,7 +115,7 @@ export default function Home() {
   const frontPhoto = useBaseUrl('/img/teststation_front.jpg');
   const backPhoto = useBaseUrl('/img/teststation_back.jpg');
   return (
-    <Layout title="Home" description="Automated analog IC test station">
+    <Layout title="Home" description="Automated analog and neuromorphic integrated circuits test station">
       <main className={styles.main}>
 
         {/* ── Hero ── */}
@@ -123,13 +123,13 @@ export default function Home() {
           <div className={styles.heroInner}>
             <p className={styles.eyebrow}>AIMLAB · WashU</p>
             <h1 className={styles.heroTitle}>
-              Automated Analog<br />IC Test Station
+              Automated Analog and<br />Neuromorphic Integrated<br />Circuits Test-Station
             </h1>
             <p className={styles.heroSub}>
-              An automated precision measurement platform for post-tapeout
-              characterization of analog ICs—including MOSFETs, op-amps, and beyond.
-              Generate complete sweeps, structured datasets, and publication-ready
-              plots through a unified Python interface.
+              Post-tapeout IC testing often requires separate instruments and repeated
+              manual setup. This modular board, STM32 firmware, and Python control
+              system bring programmable biasing and precision measurements together
+              to make experiments easier to repeat across devices.
             </p>
             <div className={styles.heroCtas}>
               <Link className={styles.ctaPrimary} to="/docs/intro">
@@ -251,6 +251,23 @@ export default function Home() {
                 View measurements
               </Link>
             </div>
+          </div>
+        </section>
+
+        <section className={styles.projectCredits} aria-labelledby="project-credits-title">
+          <div className={styles.sectionInner}>
+            <h2 id="project-credits-title" className={styles.projectCreditsTitle}>Project credits</h2>
+            <p>Developed by Kaiyuan (Sam) Kang at AIMLAB, Washington University in St. Louis.</p>
+            <p>
+              This project is supported in part by a Research Coordination Network (RCN)
+              grant from the National Science Foundation (NSF), grant no. 2332166.
+            </p>
+            <p>
+              Original project materials are licensed under{' '}
+              <a href="https://github.com/aimlab-wustl/RCNteststation/blob/main/LICENSE">
+                CC BY-NC 4.0
+              </a>.
+            </p>
           </div>
         </section>
 

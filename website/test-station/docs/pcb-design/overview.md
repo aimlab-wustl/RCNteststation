@@ -21,7 +21,7 @@ sidebar_position: 1
 
 ## System Block Diagram
 
-![System block diagram](/img/blockdiagramnew.png)
+![Test station signal paths and control architecture](/img/system-block-diagram.svg)
 
 The test station supports both NI USB-6212 and STM32 control paths. A
 jumper selects which controller drives the DAC daisy chain; the remaining

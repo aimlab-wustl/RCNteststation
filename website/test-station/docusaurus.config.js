@@ -34,8 +34,8 @@ import {themes as prismThemes} from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'Automated Analog IC Test Station',
-  tagline: 'Open-source hardware and AI-assisted measurement platform for analog chip testing',
+  title: 'Automated Analog and Neuromorphic Integrated Circuits Test-Station',
+  tagline: 'Modular hardware, firmware, and Python control for repeatable IC characterization',
   favicon: 'img/favicon.ico',
 
   url: 'https://aimlab-wustl.github.io',
@@ -154,7 +154,7 @@ const config = {
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} Automated Analog IC Test Station.`,
+        copyright: `Copyright © ${new Date().getFullYear()} Automated Analog and Neuromorphic Integrated Circuits Test-Station.`,
       },
       prism: {
         theme: prismThemes.github,

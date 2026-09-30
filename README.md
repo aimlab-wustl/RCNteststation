@@ -1,64 +1,42 @@
-# RCN Test Station
+# Automated Analog and Neuromorphic Integrated Circuits Test-Station
 
-RCN Test Station is a modular hardware, firmware, software, and documentation project for automated analog IC characterization. The platform is designed to support programmable bias generation, synchronized measurement, Python-based experiment control, and future AI-assisted closed-loop testing.
+Characterizing a fabricated analog or neuromorphic IC often requires several instruments, separate software interfaces, and repeated manual setup for each device. This makes measurements slow to run and difficult to reproduce. The test station brings programmable biasing, precision voltage and current measurement, fast transient capture, and Python control into one modular system so that researchers can reuse the hardware and compare results across devices.
 
-## Overview
+This project is supported in part by a Research Coordination Network (RCN) grant from the National Science Foundation (NSF), grant no. **2332166**.
 
-Analog and mixed-signal IC testing often requires repeated measurements across different bias conditions, input signals, and operating points. This project aims to make that process more programmable, repeatable, and scalable by combining custom PCB hardware, embedded firmware, Python control software, and a documentation website.
+[System documentation](https://aimlab-wustl.github.io/RCNteststation/) · [Hardware setup](https://aimlab-wustl.github.io/RCNteststation/docs/getting-started/hardware-setup) · [Software setup](https://aimlab-wustl.github.io/RCNteststation/docs/getting-started/software-setup)
 
-The long-term goal is to develop a chip-in-the-loop test platform where measurement results can guide future test conditions automatically.
+## Test station system
 
-## Repository Structure
+| Subsystem | V3 implementation |
+| --- | --- |
+| Programmable bias | Five DAC80508 devices provide 40 independent 16-bit outputs over 0–5 V. A jumper selects NI USB-6212 or STM32H743 control. |
+| Precision voltage acquisition | Two ADS131A04 devices provide eight differential 24-bit inputs. The current DMA implementation streams four channels from one chip at a time, up to 62.5 kSPS per channel. |
+| Current measurement | Two OPA3S328 transimpedance circuits provide selectable nominal feedback from 2 kΩ to 2 MΩ, with their outputs measured by the precision ADC. |
+| Fast transient capture | The STM32H743 internal ADC captures up to 8,000 samples at up to 3.2 MSPS on PA1 using timer-triggered DMA. |
+| DUT connection | A ZIF40 daughterboard and package-specific adapter route bias, measurement, digital I/O, and timing signals to the device under test. |
 
-```text
-RCNteststation/
-├── firmware/              STM32 firmware and embedded control code
-├── python/                Python scripts for hardware control, automation, and data analysis
-├── website/test-station/  Docusaurus documentation website
-├── .github/workflows/     GitHub Actions deployment workflow
-├── .gitignore
-└── README.md
-```
+## Firmware and Python control
 
-## Main Components
+STM32 firmware handles USB CDC communication, DAC control, ADS131A04 acquisition, TIA range selection, and transient capture. The NI USB-6212 provides a second control path and bench analog I/O. Python modules in [`python/hardware/`](python/hardware/) expose these functions to measurement scripts, which save data and generate plots for repeatable tests.
 
-### Hardware
+The [DAC characterization](https://aimlab-wustl.github.io/RCNteststation/docs/subsystems/dac/characterization) and [ADC characterization](https://aimlab-wustl.github.io/RCNteststation/docs/subsystems/adc/characterization) pages report measured board-level performance and the conditions and limitations of each test.
 
-The hardware platform is designed to support automated analog IC measurements, including:
+## Repository contents
 
-- Programmable DAC-based bias generation
-- ADC-based voltage and signal measurement
-- NI-DAQ and STM32 control interfaces
-- Precision voltage reference and power regulation
-- ZIF socket or device-under-test interface
-- PCB-level routing, grounding, and noise-aware design
+| Path | Contents |
+| --- | --- |
+| [`pcb/`](pcb/) | V3 Altium motherboard and daughterboard sources and fabrication files |
+| [`firmware/`](firmware/) | STM32 firmware and required vendor libraries |
+| [`python/`](python/) | Hardware drivers and measurement scripts |
+| [`website/test-station/`](website/test-station/) | System documentation, schematics, and characterization figures |
 
-### Firmware
+## Status
 
-The firmware folder contains embedded control code for the STM32-based portion of the test station. This may include communication, SPI control, ADC/DAC coordination, timing, and hardware bring-up routines.
+MOSFET and op-amp DC measurements and fast step-response capture have been implemented. AC/noise characterization and adaptive test planning remain in development. The system is intended to support different post-tapeout devices through interchangeable DUT adapters and reusable measurement routines.
 
-### Python Software
+## Credit and license
 
-The Python folder contains scripts for controlling the test station and running experiments. Functions include:
+Project development: **Kaiyuan (Sam) Kang**, AIMLAB, Washington University in St. Louis.
 
-- DAC voltage setting
-- ADC data acquisition
-- NI-DAQ control
-- STM32 communication
-- Calibration routines
-- Automated test sequences
-- Data logging and analysis
-
-### Documentation Website
-
-The documentation website is built with Docusaurus and located in:
-
-```text
-website/test-station/
-```
-
-The website documents the system architecture, hardware design, software control, and automation roadmap.
-
-## Project Status
-
-This project is under active development. Hardware, firmware, software, and documentation will be updated as the test station evolves.
+Unless otherwise noted, original project material is licensed under the [Creative Commons Attribution-NonCommercial 4.0 International Public License](LICENSE) (**CC BY-NC 4.0**). Noncommercial reuse and adaptation require attribution, a link to the license, and an indication of changes. Commercial use requires separate permission from the rights holder. Third-party STM32 libraries retain their own licenses in their respective directories.

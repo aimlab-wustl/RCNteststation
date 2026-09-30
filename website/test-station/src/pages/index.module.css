@@ -39,7 +39,7 @@
   border-bottom: 1px solid var(--ifm-color-emphasis-200);
 }
 .heroInner {
-  max-width: 720px;
+  max-width: 860px;
   margin: 0 auto;
 }
 .eyebrow {
@@ -51,7 +51,7 @@
   margin: 0 0 1.25rem;
 }
 .heroTitle {
-  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  font-size: clamp(2rem, 4.5vw, 3.2rem);
   font-weight: 700;
   line-height: 1.1;
   margin: 0 0 1.25rem;
@@ -62,7 +62,7 @@
   line-height: 1.7;
   color: var(--ifm-color-emphasis-700);
   margin: 0 0 2rem;
-  max-width: 600px;
+  max-width: 720px;
 }
 .heroCtas {
   display: flex;
@@ -310,4 +310,21 @@
 }
 .footerCta .heroCtas {
   justify-content: center;
+}
+
+/* ── Project credits ── */
+.projectCredits {
+  border-top: 1px solid var(--ifm-color-emphasis-200);
+  padding: 2.5rem 2rem 3rem;
+  color: var(--ifm-color-emphasis-700);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+.projectCreditsTitle {
+  color: var(--ifm-heading-color);
+  font-size: 1.15rem;
+  margin-bottom: 0.8rem;
+}
+.projectCredits p {
+  margin: 0.4rem 0;
 }

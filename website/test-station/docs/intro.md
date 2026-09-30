@@ -4,9 +4,11 @@ title: Introduction
 sidebar_position: 1
 ---
 
-# AIMLAB Automated Analog IC Test Station
+# Automated Analog and Neuromorphic Integrated Circuits Test-Station
 
-After an analog IC is fabricated, thoroughly and repeatably characterizing multiple devices can be one of the most demanding stages of development. Conventional bench measurements are often time-consuming, difficult to reproduce, and cumbersome to document. The AIMLAB test station addresses these challenges through an automated precision measurement platform that performs complete characterization sweeps, stores structured data, and generates publication-ready plots through a unified Python interface.
+Characterizing fabricated analog and neuromorphic ICs often requires separate instruments, software interfaces, and repeated manual setup. These steps are slow and make results difficult to compare across devices. The AIMLAB test station combines a custom measurement board, STM32 firmware, and Python control to make bias generation, acquisition, and data analysis more repeatable.
+
+This project is supported in part by a Research Coordination Network (RCN) grant from the National Science Foundation (NSF), grant no. **2332166**.
 
 ## What the Station Does
 

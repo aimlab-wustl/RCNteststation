@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 960" role="img" aria-labelledby="title desc">
+  <title id="title">Test-station system architecture</title>
+  <desc id="desc">A host PC connects to NI USB-6212 and STM32H743 controllers. A jumper selects the DAC controller. DAC bias, translated digital I/O and NI analog I/O and timing reach the DUT adapter. DUT voltage and current are measured by ADS131A04 and a TIA, and transient voltage by the STM32 internal ADC.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#7c8a9e"/></marker>
+    <style>
+      .title{font:700 27px system-ui,sans-serif;fill:#172554}.subtitle{font:15px system-ui,sans-serif;fill:#475569}
+      .head{font:700 21px system-ui,sans-serif;fill:#1e293b}.detail{font:16px system-ui,sans-serif;fill:#334155}
+      .small{font:14px system-ui,sans-serif;fill:#475569}.label{font:600 14px system-ui,sans-serif;fill:#475569}
+      .box{stroke-width:2;rx:14}.wire{fill:none;stroke:#7c8a9e;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <!-- Transparent canvas; pale panels keep the text legible on light and dark pages. -->
+  <rect x="25" y="12" width="940" height="79" rx="12" fill="#f8fafc"/>
+  <text x="40" y="53" class="title">Test-Station System Architecture</text>
+  <text x="40" y="82" class="subtitle">V3 motherboard and DUT adapter · arrows show signal or control direction</text>
+
+  <!-- Connections are drawn behind the blocks. -->
+  <path class="wire" d="M225 442 H255 V253 H290"/>
+  <path class="wire" d="M225 462 H255 V654 H290"/>
+  <path class="wire" d="M545 292 H575 V368 H600"/>
+  <path class="wire" d="M470 580 V440 H645 V413"/>
+  <path class="wire" d="M692 370 H705 V300 H720"/>
+  <path class="wire" d="M500 180 V145 H720"/>
+  <path class="wire" d="M990 145 H1335 V400"/>
+  <path class="wire" d="M545 205 H1065 V375 H1230 V400"/>
+  <path class="wire" d="M990 295 H1050 V450 H1110"/>
+  <path class="wire" d="M1110 500 H990"/>
+  <path class="wire" d="M1110 548 H1070 V680 H990"/>
+  <path class="wire" d="M855 615 V540"/>
+  <path class="wire" d="M545 675 H655 V485 H720"/>
+  <path class="wire" d="M545 700 H690 V675 H720"/>
+  <path class="wire" d="M545 720 H665 V860 H720"/>
+  <path class="wire" d="M1110 570 H1090 V860 H990"/>
+
+  <!-- Host and controller blocks. -->
+  <rect x="40" y="373" width="185" height="150" class="box" fill="#f8fafc" stroke="#94a3b8"/>
+  <text x="64" y="425" class="head">Host PC</text><text x="64" y="454" class="detail">Python control</text><text x="64" y="482" class="small">USB to both paths</text>
+  <rect x="290" y="180" width="255" height="145" class="box" fill="#e8f3ff" stroke="#3b82f6"/>
+  <text x="314" y="223" class="head">NI USB-6212</text><text x="314" y="253" class="detail">AI / AO / DIO / PFI</text><text x="314" y="284" class="small">Bench control and timing</text>
+  <rect x="290" y="580" width="255" height="150" class="box" fill="#e8f3ff" stroke="#3b82f6"/>
+  <text x="314" y="625" class="head">STM32H743</text><text x="314" y="656" class="detail">USB CDC · SPI2 DMA</text><text x="314" y="686" class="small">GPIO and TIM1/DMA</text>
+  <rect x="600" y="345" width="92" height="68" class="box" fill="#f8fafc" stroke="#94a3b8"/>
+  <text x="612" y="371" class="label">DAC drive</text><text x="615" y="394" class="small">jumper</text>
+
+  <!-- Signal generation and acquisition. -->
+  <rect x="720" y="95" width="270" height="100" class="box" fill="#f3efff" stroke="#8b5cf6"/>
+  <text x="743" y="130" class="head">SN74LVC8T245 ×2</text><text x="743" y="158" class="detail">16 translated DIO lines</text><text x="743" y="182" class="small">Selectable voltage / direction</text>
+  <rect x="720" y="245" width="270" height="105" class="box" fill="#e6f7f1" stroke="#10b981"/>
+  <text x="743" y="280" class="head">DAC80508 ×5</text><text x="743" y="310" class="detail">40 bias outputs · 16-bit</text><text x="743" y="336" class="small">0–5 V · optional RC filters</text>
+  <rect x="720" y="430" width="270" height="110" class="box" fill="#e6f7f1" stroke="#10b981"/>
+  <text x="743" y="465" class="head">ADS131A04 ×2</text><text x="743" y="495" class="detail">8 differential inputs · 24-bit</text><text x="743" y="522" class="small">Precision voltage / TIA output</text>
+  <rect x="720" y="615" width="270" height="110" class="box" fill="#e6f7f1" stroke="#10b981"/>
+  <text x="743" y="650" class="head">OPA3S328 TIA</text><text x="743" y="680" class="detail">2 current measurement paths</text><text x="743" y="707" class="small">Selectable 2 kΩ–2 MΩ gain</text>
+  <rect x="720" y="805" width="270" height="110" class="box" fill="#e8f3ff" stroke="#3b82f6"/>
+  <text x="743" y="839" class="head">STM32 internal ADC</text><text x="743" y="869" class="detail">4 inputs · 0–3.3 V</text><text x="743" y="895" class="small">PA1 burst: 3.2 MSPS, 8k samples</text>
+
+  <!-- Device interface. -->
+  <rect x="1110" y="400" width="260" height="190" class="box" fill="#fff0e9" stroke="#f97316"/>
+  <text x="1135" y="445" class="head">DUT interface</text><text x="1135" y="478" class="detail">ZIF40 daughterboard</text>
+  <text x="1135" y="509" class="small">Package-specific adapter</text><text x="1135" y="546" class="small">Bias · voltage · current</text>
+  <text x="1135" y="571" class="small">DIO · trigger / timing</text>
+
+  <rect x="790" y="211" width="195" height="27" rx="6" fill="#f8fafc"/>
+  <text x="800" y="231" class="label">NI analog I/O + PFI</text>
+  <rect x="1011" y="466" width="26" height="27" rx="6" fill="#f8fafc"/>
+  <text x="1020" y="486" class="label">V</text>
+  <rect x="1012" y="644" width="24" height="27" rx="6" fill="#f8fafc"/>
+  <text x="1022" y="664" class="label">I</text>
+  <rect x="863" y="559" width="185" height="27" rx="6" fill="#f8fafc"/>
+  <text x="873" y="579" class="label">TIA voltage to ADC</text>
+  <rect x="1101" y="774" width="91" height="27" rx="6" fill="#f8fafc"/>
+  <text x="1111" y="794" class="label">transient</text>
+
+  <rect x="40" y="795" width="590" height="120" class="box" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="65" y="830" class="head">Power and reference</text>
+  <text x="65" y="860" class="detail">9 V input → 5 V / 3.3 V / 1.8 V rails</text>
+  <text x="65" y="888" class="small">ADR4525 2.5 V reference for the external DAC reference option</text>
+</svg>

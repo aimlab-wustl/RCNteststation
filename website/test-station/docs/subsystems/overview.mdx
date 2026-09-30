@@ -15,7 +15,7 @@ on the motherboard into a daughterboard then to a package-specific DUT adapter.
 
 ## Block Diagram
 
-![AIMLAB system block diagram](/img/blockdiagram.png)
+![Test station signal paths and control architecture](/img/system-block-diagram.svg)
 
 The two control paths (NI USB-6212 and STM32H743) connect to the host PC over USB.
 Both can drive the DAC80508 daisy chain for bias voltage generation, selected by a jumper. The STM32 exclusively controls the ADS131A04 ADC via SPI2 DMA for
