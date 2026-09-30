@@ -79,7 +79,6 @@ const experiments = [
 ];
 
 export default function Home() {
-  const frontPhoto = useBaseUrl('/img/teststation_front.jpg');
   const backPhoto = useBaseUrl('/img/teststation_back.jpg');
   const diagram = useBaseUrl('/img/system-block-diagram.svg');
 
@@ -88,23 +87,24 @@ export default function Home() {
       <main className={styles.main}>
         <section className={styles.hero}>
           <div className={styles.heroInner}>
-            <div className={styles.heroCopy}>
-              <p className={styles.eyebrow}>AIMLAB · Washington University in St. Louis</p>
-              <h1>Automated Analog and Neuromorphic Integrated Circuits Test-Station</h1>
-              <p className={styles.heroText}>
-                A modular test station for repeatable post-tapeout measurements.
-                The board, STM32 firmware, and Python software bring programmable
-                biasing, precise acquisition, and experiment control together.
-              </p>
-              <div className={styles.actions}>
-                <Link className={styles.primaryAction} to="/docs/intro">Explore the system</Link>
-                <Link className={styles.secondaryAction} to="/docs/measurements/measurements-overview">See measurements</Link>
+            <p className={styles.eyebrow}>AIMLAB · Washington University in St. Louis</p>
+            <h1>Automated Analog and Neuromorphic Integrated Circuits Test-Station</h1>
+            <div className={styles.heroContent}>
+              <div className={styles.heroCopy}>
+                <p className={styles.heroText}>
+                  A modular test station for repeatable post-tapeout measurements.
+                  The board, STM32 firmware, and Python software bring programmable
+                  biasing, precise acquisition, and experiment control together.
+                </p>
+                <div className={styles.actions}>
+                  <Link className={styles.primaryAction} to="/docs/intro">Explore the system</Link>
+                  <Link className={styles.secondaryAction} to="/docs/measurements/measurements-overview">See measurements</Link>
+                </div>
               </div>
-            </div>
-            <div className={styles.heroVisual} aria-label="V3 test station board views">
-              <img src={frontPhoto} alt="V3 test station board with DUT sockets" className={styles.heroPhoto} />
-              <img src={backPhoto} alt="V3 test station populated board and connections" className={styles.heroPhotoSecondary} />
-              <span className={styles.visualCaption}>V3 motherboard · front and back</span>
+              <figure className={styles.heroVisual}>
+                <img src={backPhoto} alt="V3 test station assembled motherboard and connections" className={styles.heroPhoto} />
+                <figcaption className={styles.visualCaption}>V3 motherboard · assembled board</figcaption>
+              </figure>
             </div>
           </div>
         </section>
