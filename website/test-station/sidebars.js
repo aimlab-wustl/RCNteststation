@@ -114,7 +114,10 @@ const sidebars = {
     {
       type: 'category',
       label: 'Automation & AI',
-      items: ['automation/automation-overview'],
+      items: [
+        'automation/automation-overview',
+        'automation/adaptive-ac',
+      ],
     },
   ],
 

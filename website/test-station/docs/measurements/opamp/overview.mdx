@@ -218,10 +218,10 @@ Two captures were taken on the OPA4388 at gain 11:
 ![OPA4388 reduced step response](/img/step_response_reduced.png)
 
 Both captures confirm the step response capture pipeline is working at 3.2 MSPS with
-clean pre-trigger baseline and correct Aout reconstruction via the 10k/10k divider.
+a clean pre-trigger baseline and correct Aout reconstruction via the 10k/10k divider.
 The large overshoot and slow settling reflect the op-amp operating well outside its
-linear small-signal region -- true bandwidth characterization requires a small-signal
-AC sweep (planned as next measurement).
+linear small-signal region. Small-signal frequency response is characterized separately
+using the adaptive AC pipeline; see [Adaptive AC Analysis](../../automation/adaptive-ac.md).
 
 ---
 
@@ -256,7 +256,6 @@ dc.run_all()
 
 ## Planned Additions
 
-- AC Bode plot (gain + phase vs frequency, using AO stimulus + ADS131)
 - Input noise PSD (FFT of ADS131 DMA capture)
 - AC PSRR and CMRR vs frequency
 - Output short-circuit current measurement

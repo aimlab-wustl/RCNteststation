@@ -20,7 +20,9 @@ This project is supported in part by a Research Coordination Network (RCN) grant
 
 STM32 firmware handles USB CDC communication, DAC control, ADS131A04 acquisition, TIA range selection, and transient capture. The NI USB-6212 provides a second control path and bench analog I/O. Python modules in [`python/hardware/`](python/hardware/) expose these functions to measurement scripts, which save data and generate plots for repeatable tests.
 
-The [DAC characterization](https://aimlab-wustl.github.io/RCNteststation/docs/subsystems/dac/characterization) and [ADC characterization](https://aimlab-wustl.github.io/RCNteststation/docs/subsystems/adc/characterization) pages report measured board-level performance and the conditions and limitations of each test.
+The [DAC characterization](https://aimlab-wustl.github.io/RCNteststation/docs/subsystems/dac/characterization) and [ADC characterization](https://aimlab-wustl.github.io/RCNteststation/docs/subsystems/adc/characterization) pages report measured board-level performance together with the conditions and limitations of each test.
+
+The [Adaptive AC analysis](https://aimlab-wustl.github.io/RCNteststation/docs/automation/adaptive-ac) page demonstrates an Ax-based Bayesian optimization workflow that adaptively selects frequency points to estimate gain, phase, and −3 dB bandwidth with fewer physical measurements.
 
 ## Repository contents
 
@@ -33,7 +35,9 @@ The [DAC characterization](https://aimlab-wustl.github.io/RCNteststation/docs/su
 
 ## Status
 
-MOSFET and op-amp DC measurements and fast step-response capture have been implemented. AC/noise characterization and adaptive test planning remain in development. The system is intended to support different post-tapeout devices through interchangeable DUT adapters and reusable measurement routines.
+MOSFET and op-amp DC measurements, fast step-response capture, and adaptive AC characterization have been implemented. The adaptive AC pipeline has been experimentally demonstrated using Gaussian-process-based Bayesian optimization to select measurement frequencies efficiently.
+
+Noise characterization, adaptive PSRR testing, and the broader automated test-planning layer remain under development. The system is intended to support different post-tapeout devices through interchangeable DUT adapters and reusable measurement routines.
 
 ## Credit and license
 

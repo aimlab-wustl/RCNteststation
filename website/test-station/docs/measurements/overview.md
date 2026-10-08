@@ -29,7 +29,7 @@ internal ADC for transient capture.
 | [Op-Amp -- DC PSRR](./opamp/opamp-overview#dc-psrr-opa_psrrpy----psrrtest) | `OPA_psrr.py` | DC power supply rejection | Implemented |
 | [Op-Amp -- Input bias current](./opamp/opamp-overview#input-bias-current-opa_ibpy----ibtest) | `OPA_Ib.py` | Ib+, Ib-, Ios | Implemented |
 | [Op-Amp -- Step response](./opamp/opamp-overview#step-response-steptestpy) | `steptest.py` | Slew rate, rise time, overshoot | Implemented |
-| Op-Amp -- AC Bode | — | Gain + phase vs frequency, bandwidth | In progress |
+| [Op-Amp -- Adaptive AC Bode](../automation/adaptive-ac.md) | — | Gain + phase vs frequency, bandwidth | Implemented |
 | Op-Amp -- Noise PSD | — | Input-referred noise spectral density | In progress |
 
 ## Output Files

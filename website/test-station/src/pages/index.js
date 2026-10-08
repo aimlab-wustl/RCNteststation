@@ -194,7 +194,7 @@ export default function Home() {
                 <p className={styles.kicker}>Experiment workflows</p>
                 <h2>From device connection to measurement</h2>
               </div>
-              <p>Implemented MOSFET and op-amp routines use the same hardware and Python control stack. AC and noise workflows are in development.</p>
+              <p>Implemented MOSFET and op-amp routines use the same hardware and Python control stack. Adaptive AC analysis is now implemented; noise and additional adaptive measurement workflows remain in development.</p>
             </div>
             <div className={styles.experimentGrid}>
               {experiments.map((item) => (
