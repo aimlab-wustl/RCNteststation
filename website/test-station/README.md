@@ -1,41 +1,70 @@
-# Website
+# Test Station Website
 
-This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
+This directory contains the Docusaurus website for the Automated Analog and Neuromorphic Integrated Circuits Test-Station.
 
-## Installation
+- **Public website:** https://aimlab-wustl.github.io/RCNteststation/
+- **Main repository:** https://github.com/aimlab-wustl/RCNteststation
 
-```bash
-yarn
-```
+## Requirements
 
-## Local Development
+- Node.js 20 or later
+- npm
 
-```bash
-yarn start
-```
+## Local development
 
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
-
-## Build
+From `website/test-station/`, install the dependencies:
 
 ```bash
-yarn build
+npm ci
 ```
 
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
+Start the local development server:
+
+```bash
+npm start
+```
+
+The website will normally open at `http://localhost:3000/RCNteststation/`. Most documentation and style changes appear without restarting the server.
+
+## Production build
+
+```bash
+npm run build
+```
+
+The generated static website is written to `build/`. The build process also checks for invalid internal links and documentation errors.
+
+To preview the production build locally:
+
+```bash
+npm run serve
+```
+
+Do not commit `node_modules/`, `.docusaurus/`, or `build/`.
 
 ## Deployment
 
-Using SSH:
+GitHub Actions automatically builds and deploys the website when changes under `website/test-station/` are pushed to the `main` branch.
 
-```bash
-USE_SSH=true yarn deploy
+Deployment can also be started manually:
+
+1. Open the repository’s **Actions** tab.
+2. Select **Deploy Docusaurus to GitHub Pages**.
+3. Choose **Run workflow**.
+
+The deployment workflow is defined in:
+
+```text
+.github/workflows/deploy.yml
 ```
 
-Not using SSH:
+## Directory structure
 
-```bash
-GIT_USER=<Your GitHub username> yarn deploy
-```
-
-If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
+| Path | Contents |
+| --- | --- |
+| `docs/` | Documentation pages |
+| `src/pages/` | Custom homepage |
+| `src/css/` | Global website styling |
+| `static/img/` | Images, diagrams, plots, and other static assets |
+| `sidebars.js` | Documentation sidebar organization |
+| `docusaurus.config.js` | Website metadata, navigation, and deployment configuration |
